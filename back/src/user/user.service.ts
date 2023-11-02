@@ -5,7 +5,6 @@ export interface UserService {
     getById(is: number):User | null;
     // getUsers(): User[];
     deleteUser(id: number): void;
-    updateById(id: number, username: string): User;
+    updateById(userToUpdate: User): void;
     getAllUsers(): User[];
-    
 }

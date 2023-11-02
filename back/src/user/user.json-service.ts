@@ -94,7 +94,7 @@ export class UserJSONService implements UserService {
         try {
             const data = fs.readFileSync('data.json', 'utf-8');
             const users: User[] = JSON.parse(data);
-            userIndex = users.findIndex(user=> user.id === id)
+            userIndex = users.findIndex(user=> user.id === id);
             console.log('user finded at :', userIndex);
             if(userIndex===0) 
                 users.shift();
@@ -111,8 +111,22 @@ export class UserJSONService implements UserService {
         // throw new Error('3.Method not implemented.');
     }
 
-    updateById(id: number, username: string): User{
-        throw new Error('4.Method not implemented.');
+    updateById(userToUpdate: User): void{
+        let userIndex:number;
+        try {
+            const data = fs.readFileSync('data.json', 'utf-8');
+            const users: User[] = JSON.parse(data);
+            userIndex = users.findIndex(user=> user.id === userToUpdate.id);
+            console.log('user finded at :', userIndex);
+            users[userIndex].username = userToUpdate.username;
+            const jsonString = JSON.stringify(users);
+            fs.writeFileSync('data.json', jsonString, 'utf-8');
+            console.log('User update from Fichier JSON.');
+        }
+        catch(error){
+            console.error('Erreur lors de la conversion du JSON :', error);
+        }
+        // throw new Error('4.Method not implemented.');
     }
 
     getAllUsers(): User[]{

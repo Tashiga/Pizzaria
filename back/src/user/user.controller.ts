@@ -30,4 +30,8 @@ export class UserController {
     deleteUser(id: number){
         return this.userService.deleteUser(id);
     }
+
+    updateUser(user: User) {
+        return this.userService.updateById(user);
+    }
 }

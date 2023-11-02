@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { UserController } from './user.controller';
+import { User } from './user';
 
 export class UserRouter {
     router = Router();
@@ -48,6 +49,19 @@ export class UserRouter {
             try {
                 const result = this.userController.deleteUser(
                     parseInt(req.params.id),
+                );
+                res.status(200).json(result);
+            } catch (error: unknown) {
+                next(error);
+            }
+            console.log("-----------------------------");
+        });
+
+        this.router.put('/update-user/', (req, res, next) => {
+            console.log("[Update] - try to update (", req.body, ")");
+            try {
+                const result = this.userController.updateUser(
+                    req.body,
                 );
                 res.status(200).json(result);
             } catch (error: unknown) {
