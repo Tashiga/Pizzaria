@@ -1,37 +1,76 @@
-import { User } from './user';
+import { Request, Response } from 'express';
 import { UserService } from './user.service';
 
 export class UserController {
     constructor(private userService: UserService) {}
 
-    add(username: string): User {
-        // is the username empty ?
-        // is the username whitespaced ?
-        // other checks...
-        return this.userService.add(username);
+    add(req: Request, res: Response): void {
+        const username = req.body;
+        this.userService.add(username, (error: Error | null, result?: any) => {
+            if (error) {
+              res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'utilisateur' });
+              return;
+            }
+            res.status(201).json({ message: 'Utilisateur ajouté avec succès' });
+          });
     }
 
-    getById(id: number): User | null {
-        // is the id a decimal ?
-        // is the id a negative number ?
-        // other checks...
-        return this.userService.getById(id);
+    getById(req: Request, res: Response): void {
+        const id = parseInt(req.params.id);
+        this.userService.getById(id, (error: Error | null, user?: any) => {
+          if (error) {
+            res.status(404).json({ error: error.message });
+            return;
+          }
+          res.status(200).json({ user });
+        });
+      }
+
+    getByUsername(req: Request, res: Response): void {
+        const {username} = req.params; 
+        this.userService.getByUsername(username, (error: Error | null, users?: any[]) => {
+        if (error) {
+            res.status(500).json({ error: 'Erreur lors de la récupération des utilisateurs' });
+            return;
+        }
+        res.status(200).json({ users });
+        });
+
     }
 
-    // getUsers(): User[] {
-    //     console.log("hi");
-    //     return this.userService.getUsers();
-    // }
-
-    getAllUsers() {
-        return this.userService.getAllUsers();
+    getAllUsers(req: Request, res: Response) : void {
+        this.userService.getAllUsers(
+            (error: Error | null, users?: any[]) => {
+                if (error) {
+                  res.status(500).json({ error: 'Erreur lors de la récupération des utilisateurs' });
+                  return;
+                }
+                res.status(200).send({ users: users });
+              }
+        );
     }
 
-    deleteUser(id: number){
-        return this.userService.deleteUser(id);
+    deleteUser(req: Request, res: Response): void{
+        const userId = parseInt(req.params.id);
+        this.userService.deleteUser(userId, (error: Error | null, result?: any) => {
+            if (error) {
+              res.status(500).json({ error: 'Erreur lors de la suppression de l\'utilisateur' });
+              return;
+            }
+            res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
+          });
+
     }
 
-    updateUser(user: User) {
-        return this.userService.updateById(user);
+    updateUser(req: Request, res: Response): void {
+        const userId = parseInt(req.params.id);
+        const updatedData = req.body;
+        this.userService.updateById(userId, updatedData, (error: Error | null, result?: any) => {
+            if (error) {
+              res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'utilisateur' });
+              return;
+            }
+            res.status(200).json({ message: 'Utilisateur mis à jour avec succès' });
+          });
     }
 }
