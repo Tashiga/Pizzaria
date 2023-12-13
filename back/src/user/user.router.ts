@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { Router } from 'express';
 import { UserController } from './user.controller';
 
@@ -9,50 +10,38 @@ export class UserRouter {
     }
 
     private configureRoutes(): void {
+
         this.router.get('/user/:id', (req, res, next) => {
             console.log("[User] - try to get (", req.params.id, ")");
-            try {
-                const result = this.userController.getById(
-                    parseInt(req.params.id),
-                );
-                res.status(200).json(result);
-            } catch (error: unknown) {
-                next(error);
-            }
+            this.userController.getById(req, res);
             console.log("-----------------------------");
         });
 
-        this.router.post('/add-user', (req, res, next) => {
+        this.router.get('/user/by-username/:username', (req, res) => {
+            this.userController.getByUsername(req, res);
+          })
+
+        this.router.post('/add-user', (req: Request, res: Response) => {
             console.log("[Add-user] - try to get...");
-            try {
-                const result = this.userController.add(req.body.username);
-                res.status(200).json(result);
-            } catch (error: unknown) {
-                next(error);
-            }
+            this.userController.add(req, res);
             console.log("-----------------------------");
-        });
+          });
 
-        this.router.get('/all-users/',(req, res, next) => {
+        this.router.get('/all-users/', async (req, res, next) => {
             console.log("[All-users] - try to get...");
-            try {
-                const result = this.userController.getAllUsers();
-                res.status(200).json(result);
-            } catch (error: unknown) {
-                next(error);
-            } 
-        console.log("-----------------------------");});
+            this.userController.getAllUsers(req, res);
+            console.log("-----------------------------");
+          });
 
         this.router.delete('/delete/:id',(req, res, next) => {
             console.log("[Delete] - try to delete (", req.params.id, ")");
-            try {
-                const result = this.userController.deleteUser(
-                    parseInt(req.params.id),
-                );
-                res.status(200).json(result);
-            } catch (error: unknown) {
-                next(error);
-            }
+            this.userController.deleteUser(req, res);
+            console.log("-----------------------------");
+        });
+
+        this.router.put('/update-user/:id', (req, res, next) => {
+            console.log("[Update] - try to update (", req.body, ")");
+            this.userController.updateUser(req, res);
             console.log("-----------------------------");
         });
     }
