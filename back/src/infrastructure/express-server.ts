@@ -1,6 +1,7 @@
 import express from 'express';
 import { ExpressRouter } from './express-router';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 export class ExpressServer {
     private express = express();
@@ -10,12 +11,20 @@ export class ExpressServer {
         private port: string,
     ) {
         this.configureBodyParser();
+        this.configureMiddleware();
         this.configureRoutes();
     }
 
     private configureBodyParser(): void {
         this.express.use(bodyParser.json());
     }
+    private configureMiddleware(): void {
+        this.express.use(cors({
+            origin: 'http://localhost:5173',
+            methods: 'GET,PUT,POST,DELETE', 
+            credentials: true
+          }));
+      }
 
     bootstrap(): void {
         this.express.listen(this.port, () => {

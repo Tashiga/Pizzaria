@@ -10,10 +10,10 @@ export class UserJSONService implements UserService {
         this.database = dbconnection;
     }
 
-    add(username: string, callback: (error: Error | null, result?: any) => void): void {
-        if(username!== null || username !== undefined){
+    add(username: User, callback: (error: Error | null, result?: any) => void): void {
+        if(username!== null && username !== undefined){
             const query = 'INSERT INTO user (username) VALUES (?)';
-            const values = [username];
+            const values = [username.username];
             console.log('username : ', values);
             this.database.query(query, values, (error: Error | null, result: any) => {
                 if (error) {
