@@ -29,7 +29,7 @@ export class PizzaJSONService implements PizzaService {
     addIngredientsToPizza(pizzaId: number, ingredientIds: number[]): Promise<any[]> {
         if (pizzaId && ingredientIds && ingredientIds.length > 0) {
             return new Promise<any[]>(async (resolve, reject) => {
-                const query = ' insert into Pizza_Ingredient (pizzaId, ingredientId) values (?, ?);';
+                const query = 'INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (?, ?);';
                 const results: any[] = [];
     
                 try {
