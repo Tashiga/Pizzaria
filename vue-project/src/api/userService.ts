@@ -59,7 +59,7 @@ const UserService = {
     },
 
     async updateUser(userId: number, updatedUser: User): Promise<AxiosResponse<User>> {
-        return axios.put<User>(`/update-user/${userId}`, updatedUser);
+        return axios.put<User>(`http://localhost:3000/api/users/update-user/${userId}`, updatedUser);
     }
   };
   

@@ -11,6 +11,8 @@
             let titleIsCreation: Ref<Boolean> = ref(false);
             const userCol: Ref<String[]> = ref(['id', 'username', 'age']);
 
+            const filterText = ref('');
+
             const toggleButton = () => {
                 titleIsCreation.value = !titleIsCreation.value;
                 if(!titleIsCreation.value) {
@@ -23,6 +25,12 @@
             const ageToAdd: Ref<number> = ref(0);
             const salaryToAdd: Ref<number> = ref(0);
             const photoToAdd: Ref<string> = ref('');
+
+            onMounted(() => {
+                console.log('On essaye de récupérer les users');
+                fetchUsers();
+                console.log('récupération vaut : ', users);
+            });
             
 
             //functions
@@ -31,7 +39,7 @@
                     console.log('try to get user [front]');
                     const response = await UserService.getUsers().then(response => {
                         users.value = Object.values(response.data);
-                        getUsers();
+                        filteredUsers();
                     });
                     console.log('get : ', users.value);
                 } catch (error) {
@@ -42,7 +50,6 @@
             async function addUser(username: User) {
                 try {
                     const response = await UserService.addUser(username);
-                    console.log("new user added ! => ", response);
                 } catch (error) {
                     console.error(error);
                 }
@@ -51,7 +58,6 @@
             async function deleteUser(userId: number) {
                 try {
                     const response = await UserService.deleteUserbyId(userId);
-                    console.log("user delete => ", response);
                 } catch (error) {
                     console.error(error);
                 }
@@ -59,6 +65,18 @@
                     fetchUsers();
                 }
 
+            }
+
+            async function updateUser(user: User){
+                try {
+                    const response = await UserService.updateUser(user.id, user);
+                    showModal.value = false;
+                } catch (error) {
+                    console.error(error);
+                }
+                finally{
+                    fetchUsers();
+                }
             }
 
             function getSrcOfPhoto(photo: string) : string {
@@ -71,25 +89,50 @@
                     username: name
                 };
                 addUser(user);
-                console.log("finished")!
             }
-
-
-            onMounted(() => {
-                console.log('On essaye de récupérer les users');
-                fetchUsers();
-                console.log('récupération vaut : ', users);
-            });
 
             function getUsers(): User[] {
                 let v : User[][] = users.value;
                 return v[0];
             }
+            
+            let showModal: Ref<Boolean> = ref(false);
+            let userToUpdate: Ref<User> = ref({"id": 0, "username" : ''});
+
+            function toggleButtonModal (user: User)  {
+                showModal.value = !showModal.value;
+                userToUpdate.value = {
+                    id: user.id,
+                    username: user.username
+                };
+            };
+
+
+            function closeModal() {
+                showModal.value = false;
+            }
+
+            const filteredUsers = () => {
+                if(filterText.value !== '') 
+                    return getUsers().filter(user =>
+                        user.username.toLowerCase().includes(filterText.value.toLowerCase())
+                    );
+                else
+                    return getUsers();
+            };
+
+            function updateFilter(event: InputEvent| any) {
+                filterText.value = (event.target as HTMLInputElement).value;
+                filteredUsers();
+            }
 
             return {users, titleIsCreation, userCol,
                 nameToAdd, ageToAdd, salaryToAdd, photoToAdd,
-                deleteUser, createNewMember, getUsers, 
-                toggleButton, getSrcOfPhoto };
+                deleteUser, createNewMember, getUsers, updateUser,
+                toggleButton, getSrcOfPhoto,
+                closeModal, showModal, toggleButtonModal, userToUpdate,
+                filterText, filteredUsers, updateFilter
+            };
         },
     };
     
@@ -98,20 +141,49 @@
 <template>
     <main>
         <div>
-            <div @click="toggleButton">
-                <button v-if="!titleIsCreation">Create new user</button>
-                <button v-else>Display all users</button>
-            </div>
             <div>
                 <div v-if="titleIsCreation">
-                    <h1>Membre à ajouter : </h1>
-                        <input type="text" placeholder="name" v-model="nameToAdd"/>
-                        <input type="text" placeholder="age" v-model="ageToAdd"/>
-                        <input type="text" placeholder="Salary per month" v-model="salaryToAdd"/>
-                        <input type="text" placeholder="photo" v-model="photoToAdd"/>
-                        <button @click="createNewMember(nameToAdd, ageToAdd, salaryToAdd, photoToAdd)">Créer</button>
+                    <h2 class="title">Create new user</h2>
+                    <img  alt="Return Back" class="icon delete moveToRight" src="@/assets/return-back.svg" width="20" @click="toggleButton()" title="Display all users"/>
                 </div>
                 <div v-else>
+                    <h2 class="title">Display all users</h2>
+                    <img alt="Create user" class="icon delete moveToRight" src="@/assets/add.svg" width="20" @click="toggleButton()" title="Create new user"/> 
+                </div>
+                
+                
+            </div>
+
+            
+            <div>
+                <div v-if="titleIsCreation">
+                        <input type="text" placeholder="name" v-model="nameToAdd"/><br>
+                        <input type="text" placeholder="age" v-model="ageToAdd"/><br>
+                        <input type="text" placeholder="Salary per month" v-model="salaryToAdd"/><br>
+                        <input type="text" placeholder="photo" v-model="photoToAdd"/><br>
+                        <button @click="createNewMember(nameToAdd, ageToAdd, salaryToAdd, photoToAdd)">Créer</button><br>
+                </div>
+                <div v-else>
+                    <span>Filter By Username : </span>
+                    <input type="text" v-model="filterText" class="filter" @input="updateFilter" placeholder="Rechercher par nom d'utilisateur" />
+
+                    <!-- Modale -->
+                    <div class="modal" v-if="showModal">
+                        <div class="modal-content">
+                            <h2>Détails de l'utilisateur</h2>
+                            <div v-if="userToUpdate">
+                                <input type="text" placeholder="{{ userToUpdate.username }}" v-model="userToUpdate.username"/>
+                                <input type="text" placeholder="{{ userToUpdate.age }}" v-model="userToUpdate.age"/>
+                                <input type="text" placeholder="{{ userToUpdate.salaryPerMonth }}" v-model="userToUpdate.salaryPerMonth"/>
+                                <input type="text" placeholder="{{ userToUpdate.photo }}" v-model="userToUpdate.photo"/>
+                                <button @click="updateUser(userToUpdate)">Update</button>
+                            </div>
+                        
+                            <!-- Bouton pour fermer la modale -->
+                            <button @click="closeModal">Fermer</button>
+                        </div>
+                    </div>
+
                     <table class="custom-table" v-if="users">   
                         <thead>
                             <tr>
@@ -119,11 +191,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(u, index) in getUsers()" :key="index">
+                            <tr v-for="u in filteredUsers()" :key="u.id">
                                 <td v-for="(col, i) in u" :key="i">
                                     {{ col }}
                                 </td>
                                 <td></td>
+                                <img alt="Update user" class="icon delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
                                 <img alt="Delete user" class="icon delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>
                         </tbody>
@@ -138,6 +211,18 @@
 
 .case{
     border: 3px solid brown;
+}
+
+.title{
+    text-align: center;
+}
+
+.filter{
+    width: 300px;
+}
+
+.filter ::placeholder{
+    text-align: center;
 }
 
 .delete{
@@ -161,6 +246,30 @@
 .custom-table td {
     border: 1px solid #ddd; 
     padding: 8px;
+}
+
+/* Styles pour la modale */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent pour assombrir le contenu derrière */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  color: black;
+}
+
+.moveToRight{
+    float: right;
 }
 
 </style>
