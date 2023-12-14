@@ -55,11 +55,11 @@ const UserService = {
     },
 
     async deleteUserbyId(userId: number): Promise<AxiosResponse<void>>{
-        return axios.delete<void>(`/delete/${userId}`);
+        return axios.delete<void>(`http://localhost:3000/api/users/delete/${userId}`);
     },
 
     async updateUser(userId: number, updatedUser: User): Promise<AxiosResponse<User>> {
-        return axios.put<User>(`/update-user/${userId}`, updatedUser);
+        return axios.put<User>(`http://localhost:3000/api/users/update-user/${userId}`, updatedUser);
     }
   };
   

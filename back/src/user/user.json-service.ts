@@ -12,8 +12,8 @@ export class UserJSONService implements UserService {
 
     add(username: User, callback: (error: Error | null, result?: any) => void): void {
         if(username!== null && username !== undefined){
-            const query = 'INSERT INTO user (username) VALUES (?)';
-            const values = [username.username];
+            const query = 'INSERT INTO user (username, age, salaryPerMonth, workHours) VALUES (?, ?, ?, ?)';
+            const values = [username.username, username.age, username.salaryPerMonth, username.workHours];
             console.log('username : ', values);
             this.database.query(query, values, (error: Error | null, result: any) => {
                 if (error) {
@@ -85,6 +85,9 @@ export class UserJSONService implements UserService {
             dbUsers = (results as any[]).map((row: any) => ({
                 id: row.id,
                 username: row.username,
+                age: row.age,
+                salaryPerMonth: row.salaryPerMonth,
+                workHours: row.workHours
             }));
             callback(null, dbUsers);
         });
