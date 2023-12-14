@@ -7,8 +7,9 @@
         setup() {
 
             //vars
-            const users: Ref<User|undefined> = ref();
+            const users: Ref<User[]|undefined> = ref();
             let titleIsCreation: Ref<Boolean> = ref(false);
+            const userCol: Ref<String[]> = ref(['id', 'username', 'age']);
 
             const toggleButton = () => {
                 titleIsCreation.value = !titleIsCreation.value;
@@ -29,7 +30,8 @@
                 try {
                     console.log('try to get user [front]');
                     const response = await UserService.getUsers().then(response => {
-                        users.value = response.data;
+                        users.value = Object.values(response.data);
+                        getUsers();
                     });
                     console.log('get : ', users.value);
                 } catch (error) {
@@ -44,6 +46,19 @@
                 } catch (error) {
                     console.error(error);
                 }
+            }
+
+            async function deleteUser(userId: number) {
+                try {
+                    const response = await UserService.deleteUserbyId(userId);
+                    console.log("user delete => ", response);
+                } catch (error) {
+                    console.error(error);
+                }
+                finally{
+                    fetchUsers();
+                }
+
             }
 
             function getSrcOfPhoto(photo: string) : string {
@@ -66,9 +81,15 @@
                 console.log('récupération vaut : ', users);
             });
 
-            return { users, titleIsCreation, 
+            function getUsers(): User[] {
+                let v : User[][] = users.value;
+                return v[0];
+            }
+
+            return {users, titleIsCreation, userCol,
                 nameToAdd, ageToAdd, salaryToAdd, photoToAdd,
-                toggleButton, getSrcOfPhoto, createNewMember};
+                deleteUser, createNewMember, getUsers, 
+                toggleButton, getSrcOfPhoto };
         },
     };
     
@@ -91,32 +112,55 @@
                         <button @click="createNewMember(nameToAdd, ageToAdd, salaryToAdd, photoToAdd)">Créer</button>
                 </div>
                 <div v-else>
-                    <table>
+                    <table class="custom-table" v-if="users">   
                         <thead>
                             <tr>
-                                <th colspan="2"><h1>List of our members</h1></th>
+                                <th v-for="(col, i) in userCol" :key="i">{{ col }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="member in users">
-                                <div v-for="(u, index) in member" :key="index">
-                                    <td v-if="member!= undefined">{{ u.id }} </td>
-                                    <td v-if="member!= undefined">{{ u.username }} </td>
-                                </div>
+                            <tr v-for="(u, index) in getUsers()" :key="index">
+                                <td v-for="(col, i) in u" :key="i">
+                                    {{ col }}
+                                </td>
+                                <td></td>
+                                <img alt="Delete user" class="icon delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-       
     </main>
 </template>
 
 <style>
 
 .case{
-    border: 3px solid white;
+    border: 3px solid brown;
+}
+
+.delete{
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+
+.custom-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.custom-table th {
+    background-color: #777877; 
+    padding: 7px;
+    color: white;
+    border: 1px solid #ddd;
+}
+
+.custom-table td {
+    border: 1px solid #ddd; 
+    padding: 8px;
 }
 
 </style>
