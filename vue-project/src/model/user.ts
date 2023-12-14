@@ -3,5 +3,5 @@ export type User = {
     username: string;
     age?: number;
     salaryPerMonth?: number;
-    photo?: string;
+    workHours?: number;
 }

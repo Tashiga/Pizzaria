@@ -9,7 +9,7 @@
             //vars
             const users: Ref<User[]|undefined> = ref();
             let titleIsCreation: Ref<Boolean> = ref(false);
-            const userCol: Ref<String[]> = ref(['id', 'username', 'age']);
+            const userCol: Ref<String[]> = ref(['id', 'username', 'age', 'salaryPerMonth', 'workHours']);
 
             const filterText = ref('');
 
@@ -24,7 +24,7 @@
             const nameToAdd: Ref<string> = ref('');
             const ageToAdd: Ref<number> = ref(0);
             const salaryToAdd: Ref<number> = ref(0);
-            const photoToAdd: Ref<string> = ref('');
+            const workHoursAdd: Ref<number> = ref(0);
 
             onMounted(() => {
                 console.log('On essaye de récupérer les users');
@@ -69,6 +69,12 @@
 
             async function updateUser(user: User){
                 try {
+                    if(user.age && user.age<=0) 
+                        throw new Error('Age ne peut être négatif ou null.');
+                    else if(user.salaryPerMonth && user.salaryPerMonth<0)
+                        throw new Error('SalaryPerMonth ne peut être négatif.');
+                    else if(user.workHours && user.workHours<0)
+                        throw new Error('WorkHours ne peut être négatif.');
                     const response = await UserService.updateUser(user.id, user);
                     showModal.value = false;
                 } catch (error) {
@@ -79,14 +85,17 @@
                 }
             }
 
-            function getSrcOfPhoto(photo: string) : string {
-                return '@/assets/' + photo;
-            }
+            // function getSrcOfPhoto(photo: string) : string {
+            //     return '@/assets/' + photo;
+            // }
 
-            function createNewMember(name: string, age?: number, salaryPerMonth?: number, photo?: string) {
+            function createNewMember(name: string, age?: number, salaryPerMonth?: number, workHours?: number) {
                 const user: User = {
                     id: 0,//par default je mets 0 comme id pour ceux qui n'ont pas
-                    username: name
+                    username: name,
+                    age: age,
+                    salaryPerMonth: salaryPerMonth,
+                    workHours : workHours
                 };
                 addUser(user);
             }
@@ -97,13 +106,16 @@
             }
             
             let showModal: Ref<Boolean> = ref(false);
-            let userToUpdate: Ref<User> = ref({"id": 0, "username" : ''});
+            let userToUpdate: Ref<User> = ref({"id": 0, "username" : '', "age": 0, "salaryPerMonth": 0, "workHours": 0});
 
             function toggleButtonModal (user: User)  {
                 showModal.value = !showModal.value;
                 userToUpdate.value = {
                     id: user.id,
-                    username: user.username
+                    username: user.username,
+                    age: user.age,
+                    salaryPerMonth: user.salaryPerMonth,
+                    workHours: user.workHours
                 };
             };
 
@@ -127,9 +139,9 @@
             }
 
             return {users, titleIsCreation, userCol,
-                nameToAdd, ageToAdd, salaryToAdd, photoToAdd,
+                nameToAdd, ageToAdd, salaryToAdd, workHoursAdd,
                 deleteUser, createNewMember, getUsers, updateUser,
-                toggleButton, getSrcOfPhoto,
+                toggleButton, 
                 closeModal, showModal, toggleButtonModal, userToUpdate,
                 filterText, filteredUsers, updateFilter
             };
@@ -160,8 +172,8 @@
                         <input type="text" placeholder="name" v-model="nameToAdd"/><br>
                         <input type="text" placeholder="age" v-model="ageToAdd"/><br>
                         <input type="text" placeholder="Salary per month" v-model="salaryToAdd"/><br>
-                        <input type="text" placeholder="photo" v-model="photoToAdd"/><br>
-                        <button @click="createNewMember(nameToAdd, ageToAdd, salaryToAdd, photoToAdd)">Créer</button><br>
+                        <input type="text" placeholder="work hours" v-model="workHoursAdd"/><br>
+                        <button @click="createNewMember(nameToAdd, ageToAdd, salaryToAdd,workHoursAdd)">Créer</button><br>
                 </div>
                 <div v-else>
                     <span>Filter By Username : </span>
@@ -172,10 +184,10 @@
                         <div class="modal-content">
                             <h2>Détails de l'utilisateur</h2>
                             <div v-if="userToUpdate">
-                                <input type="text" placeholder="{{ userToUpdate.username }}" v-model="userToUpdate.username"/>
-                                <input type="text" placeholder="{{ userToUpdate.age }}" v-model="userToUpdate.age"/>
-                                <input type="text" placeholder="{{ userToUpdate.salaryPerMonth }}" v-model="userToUpdate.salaryPerMonth"/>
-                                <input type="text" placeholder="{{ userToUpdate.photo }}" v-model="userToUpdate.photo"/>
+                                <input type="text" placeholder="UserName" v-model="userToUpdate.username"/>
+                                <input type="text" placeholder="Age" v-model="userToUpdate.age"/>
+                                <input type="text" placeholder="SalaryPerMonth" v-model="userToUpdate.salaryPerMonth"/>
+                                <input type="text" placeholder="WorkHours" v-model="userToUpdate.workHours"/>
                                 <button @click="updateUser(userToUpdate)">Update</button>
                             </div>
                         
@@ -195,7 +207,6 @@
                                 <td v-for="(col, i) in u" :key="i">
                                     {{ col }}
                                 </td>
-                                <td></td>
                                 <img alt="Update user" class="icon delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
                                 <img alt="Delete user" class="icon delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>
