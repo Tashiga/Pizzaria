@@ -7,7 +7,8 @@ export interface PizzaService {
     updateById(id: number, updatedData: any, callback: (error: Error | null, result?: any) => void): void;
     addIngredientsToPizza(pizzaId: number, ingredientIds: number[]): Promise<any[]>;
     getAllPizzas(callback: (error: Error | null, pizzas?: Pizza[]) => void): void;
-    getPizzaById(id:number): Promise<Pizza>
+    getPizzaById(id:number): Promise<Pizza>;
+    getPizzaByIdNoneIngredients(id: number): Promise<Pizza>;
     // decoDB():void;
 
 }

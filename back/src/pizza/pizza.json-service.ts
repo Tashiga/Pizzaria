@@ -58,8 +58,17 @@ export class PizzaJSONService implements PizzaService {
             let ids: [{'id': number}] = results;
             try {
                 for (const id of ids) {
-                    const dbPizza: Pizza = await this.getPizzaById(id.id);
-                    dbPizzas.push(dbPizza);
+                    console.log("test id : ", id.id);
+                    const dbPizza: Pizza = await this.getPizzaById(id.id);//faire attention car on a que les pizzas ayant au moins un ingredient
+                    // pour les pizzas n'ayant aucun ingredient faudrait rajouter des instructions pour les recuperer
+                    if(dbPizza.name==='Pizza sans ingrédients') {
+                        console.log("check");
+                        dbPizzas.push(await this.getPizzaByIdNoneIngredients(id.id));
+                    }
+                    else {
+                        dbPizzas.push(dbPizza);
+                    }
+                    
                 }
                 console.log("finished : ", dbPizzas);
     
@@ -80,6 +89,12 @@ export class PizzaJSONService implements PizzaService {
                     return;
                 }
                 if (result.length === 0) {
+                    resolve({
+                        id: id,
+                        name: 'Pizza sans ingrédients',
+                        price: 0,
+                        ingredients: []
+                    });
                     return;
                 }
                 const user = result[0];
@@ -95,6 +110,27 @@ export class PizzaJSONService implements PizzaService {
                     'name' : result[0].name,
                     'price' : result[0].price,
                     'ingredients' : ingredients
+                }
+                resolve(pizza);
+            });
+        });
+    }
+
+    async getPizzaByIdNoneIngredients(id: number): Promise<Pizza> {
+        return new Promise((resolve, reject) => {
+            let query = 'SELECT * FROM pizza WHERE pizza.id = ?';
+            this.dbconnection.query(query, [id], (error: Error | null, result: any) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                if (result.length === 0) {
+                    return;
+                }
+                const pizza: Pizza = {
+                    'id' : result[0].id,
+                    'name' : result[0].name,
+                    'price' : result[0].price
                 }
                 resolve(pizza);
             });
