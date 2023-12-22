@@ -72,8 +72,8 @@ export class PizzaJSONService implements PizzaService {
 
     async getPizzaById(id: number): Promise<Pizza> {
         return new Promise((resolve, reject) => {
-            let query = 'select pizza.id, pizza.name, pizza.price, ingredient.id as ingredientId, ingredient.name as ingredientName '+
-            'from pizza_ingredient inner join pizza on pizza.id = pizza_ingredient.pizzaId inner join ingredient on ingredient.id = pizza_ingredient.ingredientId where pizza.id = ?';
+            let query = 'SELECT pizza.id, pizza.name, pizza.price, ingredient.id AS ingredientId, ingredient.name AS ingredientName '+
+            'FROM pizza_ingredient INNER JOIN pizza ON pizza.id = pizza_ingredient.pizzaId INNER JOIN ingredient ON ingredient.id = pizza_ingredient.ingredientId WHERE pizza.id = ?';
             this.dbconnection.query(query, [id], (error: Error | null, result: any) => {
                 if (error) {
                     reject(error);
