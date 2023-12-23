@@ -5,10 +5,10 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <img alt="Vue logo" class="logo" src="@/assets/pizza-logo.png" width="125" height="125" />
 
     <div class="wrapper">
-      <HelloWorld msg="Bienvenue !" />
+      <HelloWorld msg="CheesyPizza Topia" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -20,7 +20,7 @@ import HelloWorld from './components/HelloWorld.vue'
     </div>
   </header>
 
-  <RouterView />
+  <RouterView class="body"/>
 </template>
 
 <style scoped>
@@ -57,6 +57,10 @@ nav a {
 
 nav a:first-of-type {
   border: 0;
+}
+
+.body{
+  margin: 100px;
 }
 
 @media (min-width: 1024px) {

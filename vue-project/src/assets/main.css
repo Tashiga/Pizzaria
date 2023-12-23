@@ -27,9 +27,26 @@ a,
     place-items: center;
   }
 
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('./background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.5; /* plus c'est proche de 0, plus c'est transparente */
+  }
+
   #app {
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
   }
 }
