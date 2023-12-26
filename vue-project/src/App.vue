@@ -27,6 +27,11 @@ import HelloWorld from './components/HelloWorld.vue'
 header {
   line-height: 1.5;
   max-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 150px;
+  width: 100%;
+  z-index: 999;
 }
 
 .logo {
@@ -38,7 +43,7 @@ nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 nav a.router-link-exact-active {
@@ -60,7 +65,9 @@ nav a:first-of-type {
 }
 
 .body{
-  margin: 100px;
+  /* margin: 100px; */
+  margin-top: 150px;
+  width: auto;
 }
 
 @media (min-width: 1024px) {
@@ -68,6 +75,7 @@ nav a:first-of-type {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
+    width: 100%;
   }
 
   .logo {
@@ -84,8 +92,6 @@ nav a:first-of-type {
     text-align: left;
     margin-left: -1rem;
     font-size: 1rem;
-
-    padding: 1rem 0;
     margin-top: 1rem;
   }
 }
