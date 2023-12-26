@@ -8,5 +8,20 @@ import SupportIcon from './icons/IconSupport.vue'
 </script>
 
 <template>
-  <h1>Hello ! </h1>
+  <h1>Bienvenue à CheesyPizza Topia !</h1>
+  <br>
+  <span class="message">Vous trouverez dans cette application, différentes espace : 
+     <ul>
+      <li>espace dédié aux admins</li>
+      <li>espace dédié aux clients</li>
+      <li>espace dédié aux staffs</li>
+     </ul>
+    </span>
 </template>
+
+<style>
+
+.message{
+  text-align: justify;
+}
+</style>

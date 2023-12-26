@@ -2,6 +2,8 @@
     import { ref, onMounted, type Ref } from 'vue';
     import UserService from '@/api/userService';
     import {type User} from '@/model/user';
+    import toastr from 'toastr';
+    import 'toastr/build/toastr.min.css';
 
     export default {
         setup() {
@@ -10,9 +12,7 @@
             const users: Ref<User[]|undefined> = ref();
             let titleIsCreation: Ref<Boolean> = ref(false);
             const userCol: Ref<String[]> = ref(['id', 'username', 'age', 'salaryPerMonth', 'workHours']);
-
             const filterText = ref('');
-
             const toggleButton = () => {
                 titleIsCreation.value = !titleIsCreation.value;
                 if(!titleIsCreation.value) {
@@ -44,22 +44,27 @@
                     console.log('get : ', users.value);
                 } catch (error) {
                     console.error(error); 
+                    toastr.error('Quelque chose s\'est mal passé');
                 }
             }
 
             async function addUser(username: User) {
                 try {
                     const response = await UserService.addUser(username);
+                    toastr.success('User created');
                 } catch (error) {
                     console.error(error);
+                    toastr.error('Quelque chose s\'est mal passé');
                 }
             }
 
             async function deleteUser(userId: number) {
                 try {
                     const response = await UserService.deleteUserbyId(userId);
+                    toastr.success('User deleted');
                 } catch (error) {
                     console.error(error);
+                    toastr.error('Quelque chose s\'est mal passé');
                 }
                 finally{
                     fetchUsers();
@@ -77,8 +82,10 @@
                         throw new Error('WorkHours ne peut être négatif.');
                     const response = await UserService.updateUser(user.id, user);
                     showModal.value = false;
+                    toastr.success('User updated');
                 } catch (error) {
                     console.error(error);
+                    toastr.error('Quelque chose s\'est mal passé');
                 }
                 finally{
                     fetchUsers();
@@ -207,8 +214,8 @@
                                 <td v-for="(col, i) in u" :key="i">
                                     {{ col }}
                                 </td>
-                                <img alt="Update user" class="icon delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
-                                <img alt="Delete user" class="icon delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
+                                <img alt="Update user" class="delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
+                                <img alt="Delete user" class="delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>
                         </tbody>
                     </table>

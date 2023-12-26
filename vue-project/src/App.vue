@@ -5,10 +5,10 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <img alt="Vue logo" class="logo" src="@/assets/pizza-logo.png" width="125" height="125" />
 
     <div class="wrapper">
-      <HelloWorld msg="Bienvenue !" />
+      <HelloWorld msg="CheesyPizza Topia" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -20,13 +20,18 @@ import HelloWorld from './components/HelloWorld.vue'
     </div>
   </header>
 
-  <RouterView />
+  <RouterView class="body"/>
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
   max-height: 100vh;
+  /* position: fixed; */
+  top: 0;
+  left: 150px;
+  width: 100%;
+  z-index: 999;
 }
 
 .logo {
@@ -38,7 +43,7 @@ nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 nav a.router-link-exact-active {
@@ -59,11 +64,19 @@ nav a:first-of-type {
   border: 0;
 }
 
+.body{
+  /* margin: 100px; */
+  margin-top: 50px;
+  width: auto;
+  height: auto;
+}
+
 @media (min-width: 1024px) {
   header {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
+    width: 100%;
   }
 
   .logo {
@@ -80,8 +93,6 @@ nav a:first-of-type {
     text-align: left;
     margin-left: -1rem;
     font-size: 1rem;
-
-    padding: 1rem 0;
     margin-top: 1rem;
   }
 }
