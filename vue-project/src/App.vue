@@ -18,6 +18,12 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink to="/about">About</RouterLink>
       </nav>
     </div>
+    
+    <RouterLink to="/connexion" class="notRouter">
+      <img alt="Connection" class="lock" src="@/assets/logout.svg" width="40" height="40" />
+    </RouterLink>
+
+    
   </header>
 
   <RouterView class="body"/>
@@ -69,6 +75,11 @@ nav a:first-of-type {
   margin-top: 50px;
   width: auto;
   height: auto;
+  margin-bottom: 20px;
+}
+
+.notRouter {
+  background-color: transparent;
 }
 
 @media (min-width: 1024px) {
@@ -87,6 +98,14 @@ nav a:first-of-type {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
+  }
+
+  .lock{
+    display: inline-block;
+  }
+
+  .lock:hover {
+    content: url('@/assets/login.svg');
   }
 
   nav {

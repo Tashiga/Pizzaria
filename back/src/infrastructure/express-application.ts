@@ -1,5 +1,9 @@
 import { ExpressRouter } from './express-router';
 import { ExpressServer } from './express-server';
+import { StaffJSONService } from '../staff/staff.json-service';
+import { StaffService } from '../staff/staff.service';
+import { AdminJSONService } from '../admin/admin.json-service';
+import { AdminService } from '../admin/admin.service';
 import { UserJSONService } from '../user/user.json-service';
 import { UserService } from '../user/user.service';
 import { IngredientJsonService } from '../ingredient/ingredient.json-service';
@@ -13,7 +17,9 @@ export class ExpressApplication {
     private expressRouter!: ExpressRouter;
     private port!: string;
     private server!: ExpressServer;
+    private staffService!: StaffService;
     private userService!: UserService;
+    private adminService!: AdminService;
     private IngredientService!: IngredientService;
     private pizzaService!: PizzaService
     private database!: DbConnection;
@@ -47,12 +53,14 @@ export class ExpressApplication {
 
     private configureServices(): void {
         this.userService = new UserJSONService(this.database);
+        this.staffService = new StaffJSONService(this.database);
+        this.adminService = new AdminJSONService(this.database);
         this.IngredientService = new IngredientJsonService(this.database);
         this.pizzaService = new PizzaJSONService(this.database);
     }
 
     private configureExpressRouter(): void {
-        this.expressRouter = new ExpressRouter(this.userService, this.IngredientService, this.pizzaService);
+        this.expressRouter = new ExpressRouter(this.userService, this.staffService, this.adminService, this.IngredientService, this.pizzaService);
     }
 
     private configureServer(): void {

@@ -1,60 +1,56 @@
-import { User } from './user';
-import { UserService } from './user.service';
+import {User} from './user';
+import {UserService} from './user.service';
 import DbConnection from '../database/dbConfig';
+import bcrypt from 'bcrypt';
 
+export class UserJSONService implements UserService{
 
-export class UserJSONService implements UserService {
-    private database!: DbConnection;
+    constructor(private dbconnection: DbConnection) {}
 
-    constructor(private dbconnection: DbConnection) {
-        this.database = dbconnection;
-    }
-
-    add(username: User, callback: (error: Error | null, result?: any) => void): void {
-        if(username!== null && username !== undefined){
-            const query = 'INSERT INTO user (username, age, salaryPerMonth, workHours) VALUES (?, ?, ?, ?)';
-            const values = [username.username, username.age, username.salaryPerMonth, username.workHours];
-            console.log('username : ', values);
-            this.database.query(query, values, (error: Error | null, result: any) => {
-                if (error) {
+    add(user: User, callback:(error: Error | null, result?: any)=>void): void{
+        if(user !== null && user !== undefined) {
+            let newUser: User= new User(0, user.nom, user.prenom, user.age, user.identifiant, user.motDePasseHash);
+            const query = 'INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES (?, ?, ?, ?, ?)';
+            const values = [newUser.nom, newUser.prenom, newUser.age, newUser.identifiant, newUser.motDePasseHash];
+            console.log('user : ', values);
+            console.log('check mdp : ', newUser);
+            if(user.motDePasseHash){
+                const bool = newUser.verifierMotDePasse(user.motDePasseHash);
+                console.log("bool : ", bool);
+            }
+            this.dbconnection.query(query, values, (error: Error | null, result: any) => {
+                if(error) {
                     callback(error);
                     return;
                 }
-                callback(null, result);
+                console.log('check : ', result.insertId);
+                callback(null, result.insertId);
             });
         }
-        // throw new Error('Method not implemented.');
     }
 
-    getById(id: number, callback: (error: Error | null, user?: any) => void): void {
-        const query = 'SELECT * FROM user WHERE id = ?';
-        this.database.query(query, [id], (error: Error | null, result: any) => {
-            if (result.length === 0) {
-                callback(new Error('Utilisateur non trouvé'));
-                return;
-            }
-            const user = result[0];
-            callback(null, user);
+    getAllUsers(callback: (error: Error | null, users ?: User[]) => void): void {
+        let users: User[] = [];
+        const query = 'SELECT * FROM User';
+        this.dbconnection.query(query, [], (error: Error | null, results: any) => {
+            users = results.map((row: any) => {
+                return new User(
+                  row.id,
+                  row.nom,
+                  row.prenom,
+                  row.age,
+                  row.identifiant,
+                  undefined,
+                  row.motDePasseHash
+                );
+              });
+            callback(null, users);
         });
-
-        // throw new Error('2.Method not implemented.');
     }
 
-    getByUsername(username: string, callback: (error: Error | null, users?: any[]) => void): void {
-        const query = 'SELECT * FROM user WHERE username = ?';
-        this.database.query(query, [username], (error: Error | null, results: any) => {
-          if (error) {
-            callback(error);
-            return;
-          }
-          callback(null, results);
-        });
-        // throw new Error('2.Method not implemented.');
-      }
-        
     deleteUser(userId: number, callback: (error: Error | null, result?: any) => void): void{   
-        const query = 'DELETE FROM user WHERE id = ?';
-        this.database.query(query, [userId], (error: Error | null, result: any) => {
+        const query = 'DELETE FROM User WHERE id = ?';
+        this.dbconnection.query(query, [userId], (error: Error | null, result: any) => {
         if (error) {
             callback(error);
             return;
@@ -65,9 +61,9 @@ export class UserJSONService implements UserService {
         // throw new Error('3.Method not implemented.');
     }
 
-    updateById(id: number, updatedData: any, callback: (error: Error | null, result?: any) => void): void {
-        const query = 'UPDATE user SET ? WHERE id = ?';
-        this.database.query(query, [updatedData, id], (error: Error | null, result: any) => {
+    updateById(id: number, updatedData: User, callback: (error: Error | null, result?: any) => void): void {
+        const query = 'UPDATE User SET ? WHERE id = ?';
+        this.dbconnection.query(query, [updatedData, id], (error: Error | null, result: any) => {
           if (error) {
             callback(error);
             return;
@@ -78,27 +74,42 @@ export class UserJSONService implements UserService {
         // throw new Error('4.Method not implemented.');
     }
 
-    getAllUsers(callback: (error: Error | null, users?: User[]) => void): void {
-        let dbUsers : User[] = [];
-        this.database.query('SELECT * FROM user', [], (queryError: Error | null, results: any) => {
-            // recupération des users
-            dbUsers = (results as any[]).map((row: any) => ({
-                id: row.id,
-                username: row.username,
-                age: row.age,
-                salaryPerMonth: row.salaryPerMonth,
-                workHours: row.workHours
-            }));
-            callback(null, dbUsers);
-        });
-      }
+    checkMDP(mdp: {identifiant: string, motDePasseHash: string}, callback: (error: Error | null, result?: any) => void):void {
+        console.log("mdp : ", mdp);
+        const query = 'SELECT * FROM user where identifiant = ?';
+        this.dbconnection.query(query, [mdp.identifiant], (error: Error | null, result: any) => {
+            if (error) {
+              callback(error);
+              return;
+            } 
+            else if(!mdp.motDePasseHash){
+                callback(error);
+                console.log('mdp null');
+                return;
+            }
+            else if(result.length <= 0) {
+                console.log('empty');
+                callback(null, {});
+                return;
+            }
+            let user: User = new User(
+                result[0].id,
+                result[0].nom,
+                result[0].prenom,
+                result[0].age,
+                result[0].identifiant,
+                undefined,
+                result[0].motDePasseHash
+            );
+            console.log('user : ', user);
+            if(user.verifierMotDePasse(mdp.motDePasseHash)) {
+                callback(null, user);
+            }
+            else {
+                callback(null, {});
+            }
+            
+          });
+    }
 
-    //   rajouter une fonction qui permet de deconnecter de la base : 
-    // decoDB():void {
-    //     this.database.close((closeError: Error | null) => {
-    //         if (closeError) {
-    //             console.error('Erreur lors de la fermeture de la connexion :', closeError);
-    //         }
-    //     });
-    // }
 }

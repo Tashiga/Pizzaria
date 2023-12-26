@@ -1,7 +1,9 @@
 <script lang="ts">
     import { ref, onMounted, type Ref } from 'vue';
     import UserService from '@/api/userService';
-    import {type User} from '@/model/user';
+    import staffService from '@/api/staffService';
+    import {Staff} from '@/model/staff';
+    import {User} from '@/model/user';
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
 
@@ -9,9 +11,9 @@
         setup() {
 
             //vars
-            const users: Ref<User[]|undefined> = ref();
+            const staffs: Ref<Staff[]|undefined> = ref();
             let titleIsCreation: Ref<Boolean> = ref(false);
-            const userCol: Ref<String[]> = ref(['id', 'username', 'age', 'salaryPerMonth', 'workHours']);
+            const userCol: Ref<String[]> = ref(['id', 'nom','prenom', 'age', 'salaryPerMonth', 'workHours']);
             const filterText = ref('');
             const toggleButton = () => {
                 titleIsCreation.value = !titleIsCreation.value;
@@ -22,14 +24,15 @@
 
             //for create new user
             const nameToAdd: Ref<string> = ref('');
-            const ageToAdd: Ref<number> = ref(0);
-            const salaryToAdd: Ref<number> = ref(0);
-            const workHoursAdd: Ref<number> = ref(0);
+            const prenomToAdd: Ref<string>  = ref('');
+            const ageToAdd: Ref<number|null> = ref(null);
+            const salaryToAdd: Ref<number|null> = ref(null);
+            const workHoursAdd: Ref<number|null> = ref(null);
 
             onMounted(() => {
                 console.log('On essaye de récupérer les users');
                 fetchUsers();
-                console.log('récupération vaut : ', users);
+                console.log('récupération vaut : ', staffs);
             });
             
 
@@ -37,20 +40,26 @@
             async function fetchUsers() {
                 try {
                     console.log('try to get user [front]');
-                    const response = await UserService.getUsers().then(response => {
-                        users.value = Object.values(response.data);
+                    const response = await staffService.getStaffs().then(response => {
+                        staffs.value = Object.values(response.data);
                         filteredUsers();
                     });
-                    console.log('get : ', users.value);
+                    console.log('get : ', staffs.value);
                 } catch (error) {
                     console.error(error); 
                     toastr.error('Quelque chose s\'est mal passé');
                 }
             }
 
-            async function addUser(username: User) {
+            async function addUser(staff: Staff) {
                 try {
-                    const response = await UserService.addUser(username);
+                    const user = new User(staff.id, staff.nom, staff.prenom, staff.age,staff.identifiant, staff.motDePasseHash);
+                    const response1 = await UserService.addUser(user);
+                    console.log("user created : ", user);
+                    console.log('response : ', response1);
+                    staff.id = response1.data.id;
+                    const response = await staffService.addStaff(staff);
+                    toggleButton();
                     toastr.success('User created');
                 } catch (error) {
                     console.error(error);
@@ -60,7 +69,8 @@
 
             async function deleteUser(userId: number) {
                 try {
-                    const response = await UserService.deleteUserbyId(userId);
+                    const response = await staffService.deleteStaffbyId(userId);
+                    const response2 = await UserService.deleteUserbyId(userId);
                     toastr.success('User deleted');
                 } catch (error) {
                     console.error(error);
@@ -72,15 +82,17 @@
 
             }
 
-            async function updateUser(user: User){
+            async function updateUser(staff: Staff){
                 try {
-                    if(user.age && user.age<=0) 
+                    if(staff.age && staff.age<=0) 
                         throw new Error('Age ne peut être négatif ou null.');
-                    else if(user.salaryPerMonth && user.salaryPerMonth<0)
+                    else if(staff.salaryPerMonth && staff.salaryPerMonth<0)
                         throw new Error('SalaryPerMonth ne peut être négatif.');
-                    else if(user.workHours && user.workHours<0)
+                    else if(staff.workHours && staff.workHours<0)
                         throw new Error('WorkHours ne peut être négatif.');
-                    const response = await UserService.updateUser(user.id, user);
+                    const response = await staffService.updateStaff(staff.id, staff);
+                    const user: User = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.identifiant, staff.motDePasseHash);
+                    const response2 = await UserService.updateUser(user.id, user);
                     showModal.value = false;
                     toastr.success('User updated');
                 } catch (error) {
@@ -92,38 +104,33 @@
                 }
             }
 
-            // function getSrcOfPhoto(photo: string) : string {
-            //     return '@/assets/' + photo;
-            // }
+            // // function getSrcOfPhoto(photo: string) : string {
+            // //     return '@/assets/' + photo;
+            // // }
 
-            function createNewMember(name: string, age?: number, salaryPerMonth?: number, workHours?: number) {
-                const user: User = {
-                    id: 0,//par default je mets 0 comme id pour ceux qui n'ont pas
-                    username: name,
-                    age: age,
-                    salaryPerMonth: salaryPerMonth,
-                    workHours : workHours
-                };
+            function createNewMember(nom: string, prenom: string, age: number | null, salaryPerMonth: number| null, workHours: number| null) {
+                if(age === null)
+                    age =0;
+                if(salaryPerMonth === null)
+                    salaryPerMonth = 0;
+                if(workHours  === null)
+                    workHours = 0;
+                const user: Staff = new Staff(0, nom, prenom, age, salaryPerMonth, workHours);
                 addUser(user);
             }
 
-            function getUsers(): User[] {
-                let v : User[][] = users.value;
+            function getUsers(): Staff[] {
+                let v : Staff[][] = staffs.value;
                 return v[0];
             }
             
+            // modal
             let showModal: Ref<Boolean> = ref(false);
-            let userToUpdate: Ref<User> = ref({"id": 0, "username" : '', "age": 0, "salaryPerMonth": 0, "workHours": 0});
+            let userToUpdate: Ref<Staff> = ref(new Staff(0, '', '', 0, 0, 0, ));
 
-            function toggleButtonModal (user: User)  {
+            function toggleButtonModal (user: Staff)  {
                 showModal.value = !showModal.value;
-                userToUpdate.value = {
-                    id: user.id,
-                    username: user.username,
-                    age: user.age,
-                    salaryPerMonth: user.salaryPerMonth,
-                    workHours: user.workHours
-                };
+                userToUpdate.value = new Staff(user.id, user.nom, user.prenom, user.age, user.salaryPerMonth, user.workHours);
             };
 
 
@@ -134,7 +141,7 @@
             const filteredUsers = () => {
                 if(filterText.value !== '') 
                     return getUsers().filter(user =>
-                        user.username.toLowerCase().includes(filterText.value.toLowerCase())
+                        user.nom.toLowerCase().includes(filterText.value.toLowerCase()) || user.prenom.toLowerCase().includes(filterText.value.toLocaleLowerCase())
                     );
                 else
                     return getUsers();
@@ -145,10 +152,10 @@
                 filteredUsers();
             }
 
-            return {users, titleIsCreation, userCol,
-                nameToAdd, ageToAdd, salaryToAdd, workHoursAdd,
-                deleteUser, createNewMember, getUsers, updateUser,
-                toggleButton, 
+            return {staffs,
+                 titleIsCreation, userCol,
+                nameToAdd, prenomToAdd, ageToAdd, salaryToAdd, workHoursAdd,
+                deleteUser, createNewMember, getUsers, updateUser, toggleButton, 
                 closeModal, showModal, toggleButtonModal, userToUpdate,
                 filterText, filteredUsers, updateFilter
             };
@@ -175,13 +182,33 @@
 
             
             <div>
+                <!-- create new Staff -->
                 <div v-if="titleIsCreation">
-                        <input type="text" placeholder="name" v-model="nameToAdd"/><br>
-                        <input type="text" placeholder="age" v-model="ageToAdd"/><br>
-                        <input type="text" placeholder="Salary per month" v-model="salaryToAdd"/><br>
-                        <input type="text" placeholder="work hours" v-model="workHoursAdd"/><br>
-                        <button @click="createNewMember(nameToAdd, ageToAdd, salaryToAdd,workHoursAdd)">Créer</button><br>
+                    <div class="labels">
+                        <label>Name : </label>
+                        <input type="text" placeholder="name" v-model="nameToAdd"/>
+                    </div>
+                    <div class="labels">
+                        <label>Prénom : </label>
+                        <input type="text" placeholder="prenom" v-model="prenomToAdd"/>
+                    </div>
+                    <div class="labels">
+                        <label>Age : </label>
+                        <input type="text" placeholder="age" v-model="ageToAdd"/>
+                    </div>
+                    <div class="labels">
+                        <label>Salary Per Month : </label>
+                        <input type="text" placeholder="Salary per month" v-model="salaryToAdd"/>
+                    </div>
+                    <div class="labels">
+                        <label>Work Hours : </label>
+                        <input type="text" placeholder="work hours" v-model="workHoursAdd"/>
+                    </div>
+                    <div class="labels">
+                        <button @click="createNewMember(nameToAdd, prenomToAdd, ageToAdd, salaryToAdd,workHoursAdd)">Créer</button>
+                    </div>
                 </div>
+
                 <div v-else>
                     <span>Filter By Username : </span>
                     <input type="text" v-model="filterText" class="filter" @input="updateFilter" placeholder="Rechercher par nom d'utilisateur" />
@@ -191,19 +218,19 @@
                         <div class="modal-content">
                             <h2>Détails de l'utilisateur</h2>
                             <div v-if="userToUpdate">
-                                <input type="text" placeholder="UserName" v-model="userToUpdate.username"/>
+                                <input type="text" placeholder="Nom" v-model="userToUpdate.nom"/>
+                                <input type="text" placeholder="Prénom" v-model="userToUpdate.prenom"/>
                                 <input type="text" placeholder="Age" v-model="userToUpdate.age"/>
                                 <input type="text" placeholder="SalaryPerMonth" v-model="userToUpdate.salaryPerMonth"/>
                                 <input type="text" placeholder="WorkHours" v-model="userToUpdate.workHours"/>
                                 <button @click="updateUser(userToUpdate)">Update</button>
                             </div>
-                        
-                            <!-- Bouton pour fermer la modale -->
                             <button @click="closeModal">Fermer</button>
                         </div>
                     </div>
 
-                    <table class="custom-table" v-if="users">   
+                    <!-- Display all Staff -->
+                    <table class="custom-table" v-if="staffs">   
                         <thead>
                             <tr>
                                 <th v-for="(col, i) in userCol" :key="i">{{ col }}</th>
@@ -290,4 +317,8 @@
     float: right;
 }
 
+.labels{
+    display: inline-block;
+    margin: 10px;
+}
 </style>
