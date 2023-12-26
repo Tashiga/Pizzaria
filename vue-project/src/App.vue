@@ -27,7 +27,7 @@ import HelloWorld from './components/HelloWorld.vue'
 header {
   line-height: 1.5;
   max-height: 100vh;
-  position: fixed;
+  /* position: fixed; */
   top: 0;
   left: 150px;
   width: 100%;
@@ -66,8 +66,9 @@ nav a:first-of-type {
 
 .body{
   /* margin: 100px; */
-  margin-top: 150px;
+  margin-top: 50px;
   width: auto;
+  height: auto;
 }
 
 @media (min-width: 1024px) {
