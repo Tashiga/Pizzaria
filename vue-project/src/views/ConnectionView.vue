@@ -3,15 +3,22 @@
     import UserService from '@/api/userService';
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
-import { User } from '@/model/user';
+    import { User } from '@/model/user';
+    import { useRouter} from 'vue-router';
+    import { useStore } from 'vuex';
+    import { computed } from 'vue';
 
     const login: {'identifiant': string, 'motDePasseHash': string} = {
     "identifiant" : "",
     "motDePasseHash" : ""
 };
-
+const store = useStore();
+        const router = useRouter();
     onMounted(async () => {
-        console.log('On essaye de récupérer les pizzas');
+        const user = computed(() => store.getters.getUser);
+        if(user && user.value){
+            router.push('/profil');
+        }
     });
 
     async function toLogIn() {
@@ -19,18 +26,39 @@ import { User } from '@/model/user';
             try {
                 console.log('check : ', login);
                 const response = await UserService.checkMDP(login).then(response => {
-                    if(response.data && Object.keys(response.data).length > 0 && Object.keys(response.data.result).length > 0){
-                        console.log("data: ", response.data);
-                        toastr.success('Connexion établie !');
+                    if(response.data && Object.keys(response.data).length > 0) {
+                        let data : any = response.data;
+                        if(Object.keys(data.result).length > 0) {
+                            console.log("data: ", data);
+                            let user: any = data.result;
+                            toastr.success('Connexion établie !');
+                            let test: User = {
+                                id: user.id,
+                                nom: user.nom,
+                                prenom: user.prenom,
+                                age: user.age,
+                                identifiant: user.identifiant
+                            }
+                            console.log('Contenu du store :', store);
+                            try {
+                                // Stocker les données de l'utilisateur dans le store Vuex
+                                store.dispatch('loginUser', test);
+                            }
+                            catch(errory){
+                                console.log("failed : ",store)
+                            }
+                            router.push('/profil');
+                        }
+                        else 
+                            toastr.error('Identifiant/Mot de passe ne correspond pas.\nVeuillez ressayer.');
                     }
-                    else 
-                        toastr.error('Identifiant/Mot de passe ne correspond pas.\nVeuillez ressayer.');
                 });
             } catch (error) {
                 console.error(error);
                 toastr.error('Problème lors de la connexion')
             }
         }
+        
     }
     
 

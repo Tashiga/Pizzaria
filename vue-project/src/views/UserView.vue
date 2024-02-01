@@ -6,6 +6,8 @@
     import {User} from '@/model/user';
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
+    import { computed } from 'vue';
+    import { useStore } from 'vuex';  
 
     export default {
         setup() {
@@ -28,11 +30,17 @@
             const ageToAdd: Ref<number|null> = ref(null);
             const salaryToAdd: Ref<number|null> = ref(null);
             const workHoursAdd: Ref<number|null> = ref(null);
+            const store = useStore();
+            let isConnected: Ref<boolean> = ref(false);
 
             onMounted(() => {
                 console.log('On essaye de récupérer les users');
                 fetchUsers();
                 console.log('récupération vaut : ', staffs);
+                const loger = computed(() => store.getters.isLoggedIn);
+                if(loger && loger.value){
+                    isConnected.value = true;
+                }
             });
             
 
@@ -120,7 +128,7 @@
             }
 
             function getUsers(): Staff[] {
-                let v : Staff[][] = staffs.value;
+                let v : Staff[][] | any = staffs.value;
                 return v[0];
             }
             
@@ -157,7 +165,7 @@
                 nameToAdd, prenomToAdd, ageToAdd, salaryToAdd, workHoursAdd,
                 deleteUser, createNewMember, getUsers, updateUser, toggleButton, 
                 closeModal, showModal, toggleButtonModal, userToUpdate,
-                filterText, filteredUsers, updateFilter
+                filterText, filteredUsers, updateFilter, isConnected
             };
         },
     };
@@ -167,7 +175,7 @@
 <template>
     <main>
         <div>
-            <div>
+            <div v-if="isConnected">
                 <div v-if="titleIsCreation">
                     <h2 class="title">Create new user</h2>
                     <img  alt="Return Back" class="icon delete moveToRight" src="@/assets/return-back.svg" width="20" @click="toggleButton()" title="Display all users"/>
@@ -176,8 +184,6 @@
                     <h2 class="title">Display all users</h2>
                     <img alt="Create user" class="icon delete moveToRight" src="@/assets/add.svg" width="20" @click="toggleButton()" title="Create new user"/> 
                 </div>
-                
-                
             </div>
 
             
@@ -241,8 +247,8 @@
                                 <td v-for="(col, i) in u" :key="i">
                                     {{ col }}
                                 </td>
-                                <img alt="Update user" class="delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
-                                <img alt="Delete user" class="delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
+                                <img v-if="isConnected" alt="Update user" class="delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
+                                <img v-if="isConnected" alt="Delete user" class="delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>
                         </tbody>
                     </table>

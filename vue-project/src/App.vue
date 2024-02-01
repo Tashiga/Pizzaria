@@ -1,6 +1,63 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterLink, RouterView } from 'vue-router';
+import HelloWorld from './components/HelloWorld.vue';
+import { useStore } from 'vuex';
+import {onMounted, ref, watchEffect, computed} from 'vue';
+
+    const store = useStore();
+    const isLoggedIn = computed(() => store.getters.isLoggedIn);
+    const myImage : any = ref(null);
+    const imgSrcProfil = ref('');
+    const imgSrcProfilHover = ref('');
+    const imgSrcConnexion = ref('');
+    const imgSrcConnexionHover = ref('');
+
+
+  onMounted(async () => {
+    const { default: imgSrcProfilDefault } = await import('@/assets/profil_white.svg');
+    const { default: imgSrcProfilHoverDefault } = await import('@/assets/profil_red.svg');
+    const { default: imgSrcConnexionDefault } = await import('@/assets/logout.svg');
+    const { default: imgSrcConnexionHoverDefault } = await import('@/assets/login.svg');
+    myImage.value = document.getElementById('myImage');
+
+    imgSrcProfil.value = imgSrcProfilDefault;
+    imgSrcProfilHover.value = imgSrcProfilHoverDefault;
+    imgSrcConnexion.value = imgSrcConnexionDefault;
+    imgSrcConnexionHover.value = imgSrcConnexionHoverDefault;
+
+    if (myImage.value) {
+      watchEffect(() => {
+        if (isLoggedIn.value) {
+          myImage.value.src = imgSrcProfil.value;
+        } else {
+          myImage.value.src = imgSrcConnexion.value;
+        }
+      });
+    } else {
+      console.log("Element avec l'ID 'myImage' non trouvé !");
+    }
+  });
+
+  const handleMouseEnter = () => {
+  if (myImage.value) {
+    if (isLoggedIn.value) {
+      myImage.value.src = imgSrcProfilHover.value;
+    } else {
+      myImage.value.src = imgSrcConnexionHover.value;
+    }
+  }
+};
+
+const handleMouseLeave = () => {
+  if (myImage.value) {
+    if (isLoggedIn.value) {
+      myImage.value.src = imgSrcProfil.value;
+    } else {
+      myImage.value.src = imgSrcConnexion.value;
+    }
+  }
+};
+
 </script>
 
 <template>
@@ -20,7 +77,9 @@ import HelloWorld from './components/HelloWorld.vue'
     </div>
     
     <RouterLink to="/connexion" class="notRouter">
-      <img alt="Connection" class="lock" src="@/assets/logout.svg" width="40" height="40" />
+      <img id="myImage" alt="Connection" class="lock" width="40" height="40"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave" />
     </RouterLink>
 
     
@@ -102,10 +161,6 @@ nav a:first-of-type {
 
   .lock{
     display: inline-block;
-  }
-
-  .lock:hover {
-    content: url('@/assets/login.svg');
   }
 
   nav {
