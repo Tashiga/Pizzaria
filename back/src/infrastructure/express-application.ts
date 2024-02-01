@@ -70,8 +70,8 @@ export class ExpressApplication {
     private connectDatabsae(): void {
         const dbConfig = {
             host: 'localhost',
-            user: 'root',
-            password: 'Sajikha16@',
+            user: 'sashtiga',
+            password: 'sashtiga',
             database: 'pizzaria'
           };
         this.database = new DbConnection(dbConfig);
