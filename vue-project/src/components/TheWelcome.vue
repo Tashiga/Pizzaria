@@ -8,7 +8,7 @@ import SupportIcon from './icons/IconSupport.vue'
 </script>
 
 <template>
-  <h1>Bienvenue à CheesyPizza Topia !</h1>
+  <h1>{{ $t('welcome_to')}} CheesyPizza Topia !</h1>
   <br>
   <span class="message">Vous trouverez dans cette application, différentes espace : 
      <ul>

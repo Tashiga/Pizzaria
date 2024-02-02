@@ -1,0 +1,12 @@
+{
+    "FR" : "Français",
+    "EN" : "Anglais",
+    "language": "Langue :",
+    "someKey": "Texte en français",
+    "setting" : "Paramètre",
+    "about" : "A propos",
+    "home" : "Accueil",
+    "amount" : "Montant",
+    "members" : "Membres",
+    "welcome_to" : "Bienvenue à"
+}

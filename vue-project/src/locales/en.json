@@ -1,0 +1,12 @@
+{
+    "EN" : "English",
+    "FR" : "French",
+    "language": "Language :",
+    "someKey": "Text in English",
+    "setting" : "Setting",
+    "about" : "About",
+    "home" : "Home",
+    "amount" : "Amount",
+    "members" : "Members",
+    "welcome_to" : "Welcome to"
+}

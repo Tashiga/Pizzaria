@@ -5,6 +5,7 @@ import PizzaView from '../views/PizzaView.vue';
 import UserView from '../views/UserView.vue';
 import ConnectionView from '../views/ConnectionView.vue';
 import ProfilView from '../views/ProfilView.vue';
+import SettingsView from '../views/SettingsView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,11 @@ const router = createRouter({
       path: '/profil',
       name: 'ProfilView',
       component: ProfilView
+    },
+    {
+      path: '/settings',
+      name: 'SettingsView',
+      component: SettingsView
     }
   ]
 })
