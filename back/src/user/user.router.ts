@@ -35,8 +35,6 @@ export class UserRouter {
 
         this.router.post('/checkMdp', (req, res, next) => {
             console.log("[CheckMDP-User] - try to get...");
-            console.log("query : ", req.query);
-            console.log("body : ", req.body);
             // const { identifiant, motDePasseHash } = req.query;
             this.userController.checkMDP(req, res);
             console.log("-----------------------------");

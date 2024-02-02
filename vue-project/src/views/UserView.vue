@@ -32,14 +32,18 @@
             const workHoursAdd: Ref<number|null> = ref(null);
             const store = useStore();
             let isConnected: Ref<boolean> = ref(false);
+            let isAnAdmin: Ref<boolean> = ref(false);
 
             onMounted(() => {
                 console.log('On essaye de récupérer les users');
                 fetchUsers();
                 console.log('récupération vaut : ', staffs);
                 const loger = computed(() => store.getters.isLoggedIn);
+                const isAdmin = computed(() => store.getters.isAdmin);
                 if(loger && loger.value){
                     isConnected.value = true;
+                    if(isAdmin && isAdmin.value)
+                        isAnAdmin.value = true;
                 }
             });
             
@@ -165,7 +169,7 @@
                 nameToAdd, prenomToAdd, ageToAdd, salaryToAdd, workHoursAdd,
                 deleteUser, createNewMember, getUsers, updateUser, toggleButton, 
                 closeModal, showModal, toggleButtonModal, userToUpdate,
-                filterText, filteredUsers, updateFilter, isConnected
+                filterText, filteredUsers, updateFilter, isConnected, isAnAdmin
             };
         },
     };
@@ -175,7 +179,7 @@
 <template>
     <main>
         <div>
-            <div v-if="isConnected">
+            <div v-if="isConnected && isAnAdmin">
                 <div v-if="titleIsCreation">
                     <h2 class="title">Create new user</h2>
                     <img  alt="Return Back" class="icon delete moveToRight" src="@/assets/return-back.svg" width="20" @click="toggleButton()" title="Display all users"/>
@@ -248,7 +252,7 @@
                                     {{ col }}
                                 </td>
                                 <img v-if="isConnected" alt="Update user" class="delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
-                                <img v-if="isConnected" alt="Delete user" class="delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
+                                <img v-if="isConnected && isAnAdmin" alt="Delete user" class="delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>
                         </tbody>
                     </table>

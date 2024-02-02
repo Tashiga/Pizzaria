@@ -11,9 +11,11 @@ export class Staff extends User{
       prenom: string, 
       age: number, 
       salaryPerMonth: number, 
-      workHours: number
+      workHours: number,
+      identifiant?: string,
+      motDePass?: string
     ) {
-      super(id, nom, prenom, age);
+      super(id, nom, prenom, age, identifiant, motDePass);
       this.salaryPerMonth = salaryPerMonth;
       this.workHours = workHours;
     }

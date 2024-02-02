@@ -7,6 +7,7 @@
     import { useRouter} from 'vue-router';
     import { useStore } from 'vuex';
     import { computed } from 'vue';
+    import type { ProfilUser } from '@/model/profilUser';
 
     const login: {'identifiant': string, 'motDePasseHash': string} = {
     "identifiant" : "",
@@ -32,12 +33,16 @@ const store = useStore();
                             console.log("data: ", data);
                             let user: any = data.result;
                             toastr.success('Connexion établie !');
-                            let test: User = {
+                            let test: ProfilUser = {
                                 id: user.id,
                                 nom: user.nom,
                                 prenom: user.prenom,
                                 age: user.age,
-                                identifiant: user.identifiant
+                                identifiant: user.identifiant,
+                                motDePasseHash: user.motDePasseHash,
+                                adresseMail: user.adresseMail,
+                                salaryPerMonth : user.salaryPerMonth,
+                                workHours : user.workHours
                             }
                             console.log('Contenu du store :', store);
                             try {

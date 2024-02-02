@@ -54,10 +54,8 @@ export class UserController {
 
     checkMDP(req: Request, res: Response): void{
         const mdp : {identifiant: string, motDePasseHash: string} = req.body;
-        console.log('Données reçues depuis le front :', req.query)
         // console.log('body : ', req.body)
         this.userService.checkMDP(mdp, (error: Error | null, result?: any) => {
-            console.log('res : ', result);
             if (error) {
                 res.status(500).json({ error: 'Erreur lors du check MDP' });
                 return;

@@ -20,14 +20,19 @@
     let pizzaToShow: Ref<Pizza> = ref({id: 0, name: '', price: 0});
     const store = useStore();
     let isConnected: Ref<boolean> = ref(false);
+    let isAnAdmin: Ref<boolean> = ref(false);
 
     onMounted(async () => {
         await fetchPizzas();
         await fetchIngredients();
         const loger = computed(() => store.getters.isLoggedIn);
+        const isAdmin = computed(() => store.getters.isAdmin);
         if(loger && loger.value){
             isConnected.value = true;
+            if(isAdmin && isAdmin.value)
+                isAnAdmin.value = true;
         }
+        console.log("test -> ", isAnAdmin.value);
     });
 
     async function fetchPizzas() {
@@ -175,7 +180,7 @@
             <div v-if="!loadIngredients">
                 <div v-for="(mot, index) in getIngredients()" :key="index" class="mot"> 
                     <span> {{ mot.name }} </span>
-                    <img v-if="isConnected" alt="Delete user" class="deleteIcon" src="@/assets/delete.svg" width="20" @click="deleteIngredient(mot.id)"/> 
+                    <img v-if="isConnected && isAnAdmin" alt="Delete user" class="deleteIcon" src="@/assets/delete.svg" width="20" @click="deleteIngredient(mot.id)"/> 
                 </div>
             </div>
             <div v-else class="custom-spinner"></div>
@@ -183,7 +188,7 @@
 
         <hr style="width: 100%;">
 
-        <div  v-if="isConnected">
+        <div  v-if="isConnected && isAnAdmin">
              <!-- create new pizza -->
             <div class="content">
                 <h1>Create new Pizza </h1>

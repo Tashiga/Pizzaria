@@ -2,6 +2,7 @@ import {User} from './user';
 import {UserService} from './user.service';
 import DbConnection from '../database/dbConfig';
 import bcrypt from 'bcrypt';
+import { ProfilUser } from './profilUser';
 
 export class UserJSONService implements UserService{
 
@@ -75,9 +76,12 @@ export class UserJSONService implements UserService{
     }
 
     checkMDP(mdp: {identifiant: string, motDePasseHash: string}, callback: (error: Error | null, result?: any) => void):void {
-        console.log("mdp : ", mdp);
-        const query = 'SELECT * FROM user where identifiant = ?';
-        this.dbconnection.query(query, [mdp.identifiant], (error: Error | null, result: any) => {
+        // const query = 'SELECT * FROM user natural join admin where identifiant = ?';
+        // select (select * from user natural join staff), * from user natural join admin ;
+        const query = 'select user.id as id, user.nom, user.prenom, user.age, user.identifiant, user.motDePasseHash, admin.adresseMail, staff.salaryPerMonth, staff.workHours from user left join admin on user.id = admin.id left join staff on user.id = staff.id where user.identifiant=?';
+        const query1 = 'SELECT * FROM admin natural join user where id = ?';
+        const query2 = 'SELECT * FROM staff natural join user where id = ?';
+        this.dbconnection.query(query, [mdp.identifiant], async (error: Error | null, result: any) => {
             if (error) {
               callback(error);
               return;
@@ -92,6 +96,8 @@ export class UserJSONService implements UserService{
                 callback(null, {});
                 return;
             }
+            let isAdmin: boolean = false;
+            let isStaff: boolean = false;
             let user: User = new User(
                 result[0].id,
                 result[0].nom,
@@ -101,9 +107,43 @@ export class UserJSONService implements UserService{
                 undefined,
                 result[0].motDePasseHash
             );
-            console.log('user : ', user);
+            console.log('user : ', result[0]);
             if(user.verifierMotDePasse(mdp.motDePasseHash)) {
-                callback(null, user);
+                let profilUser: ProfilUser = new ProfilUser(
+                    user.id,
+                    user.nom,
+                    user.prenom,
+                    user.age
+                );
+                console.log("test : ", profilUser);
+                if(user.identifiant && user.motDePasseHash)
+                    profilUser.isAccount(user.identifiant, user.motDePasseHash);
+
+                await this.isResult2(query1, result[0].id).then(response => {
+                    if(response != null && response != undefined) {
+                        isAdmin = response;
+                    }
+                });
+
+                await this.isResult2(query2, result[0].id).then(response => {
+                    if(response != null && response != undefined) {
+                        isStaff = response;
+                    }
+                });
+
+                if(isAdmin){
+                    profilUser.isAdmin(result[0].adresseMail);
+                    console.log("finally user is an admin !");
+                }
+                else if(isStaff){
+                    profilUser.isStaff(result[0].salaryPerMonth, result[0].workHours);
+                    console.log("finally user is a staff !");
+                }
+                else {
+                    console.log("finally type of user cannot find !");
+                }
+                console.log("profilUser : ", profilUser);
+                callback(null, profilUser);
             }
             else {
                 callback(null, {});
@@ -111,5 +151,21 @@ export class UserJSONService implements UserService{
             
           });
     }
+
+    async isResult2(query: string, id: number): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.dbconnection.query(query, [id], (error: Error | null, result: any) => {
+                if (error) {
+                    console.error("Erreur lors de la requête :", error);
+                    resolve(false);
+                } else if (result.length <= 0) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
 
 }
