@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/cors": "^2.8.17",
     "@types/mysql": "^2.15.24",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

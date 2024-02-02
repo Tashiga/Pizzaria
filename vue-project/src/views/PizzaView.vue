@@ -5,6 +5,8 @@
     import IngredientService from '@/api/ingredientService';
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
+    import { computed } from 'vue';
+    import { useStore } from 'vuex';  
 
     const pizzas: Ref<Pizza[]|undefined> = ref();
     const ingredients: Ref<Ingredient[]|undefined> = ref();
@@ -16,11 +18,21 @@
     let showModal: Ref<Boolean> = ref(false);
     let PizzaIngredients: Ref<Ingredient[]|undefined> = ref([]);
     let pizzaToShow: Ref<Pizza> = ref({id: 0, name: '', price: 0});
+    const store = useStore();
+    let isConnected: Ref<boolean> = ref(false);
+    let isAnAdmin: Ref<boolean> = ref(false);
 
     onMounted(async () => {
-        console.log('On essaye de récupérer les pizzas');
         await fetchPizzas();
         await fetchIngredients();
+        const loger = computed(() => store.getters.isLoggedIn);
+        const isAdmin = computed(() => store.getters.isAdmin);
+        if(loger && loger.value){
+            isConnected.value = true;
+            if(isAdmin && isAdmin.value)
+                isAnAdmin.value = true;
+        }
+        console.log("test -> ", isAnAdmin.value);
     });
 
     async function fetchPizzas() {
@@ -53,29 +65,32 @@
     }
     
     function getPizzas(): Pizza[] {
-        let v : Pizza[][] = pizzas.value;
+        let v : Pizza[][] | any = pizzas.value;
         return v === undefined ? [] : v[0];
     }
     
     function getIngredients(): Ingredient[] {
-        let w: Ingredient[][] = ingredients.value;
+        let w: Ingredient[][] | any = ingredients.value;
         return w === undefined ? [] : w[0];
     }
 
     async function addPizza(newPizza: string, newPrice: number){
         if(newPrice>0) {
-            let pizzaToAdd: Pizza = {
+            let pizza: Pizza = {
                 id: 0,
                 name: newPizza,
                 price: newPrice
             }
             try {
-                const response = await PizzaService.addPizza(pizzaToAdd);
+                const response = await PizzaService.addPizza(pizza);
             } catch (error) {
                 console.error(error); 
             }
             toastr.success('Pizza created !');
+            pizzaToAdd.value = "";
+            priceToAdd.value = 0;
         }
+        fetchPizzas();
         // pizzas.value.push({name: newPizza, price: newPrice});
     }
 
@@ -164,50 +179,49 @@
             <h1>Display all Ingredients</h1>
             <div v-if="!loadIngredients">
                 <div v-for="(mot, index) in getIngredients()" :key="index" class="mot"> 
-                    {{ mot.name }}
-                    <img alt="Delete user" class="deleteIcon" src="@/assets/delete.svg" width="20" @click="deleteIngredient(mot.id)"/> 
+                    <span> {{ mot.name }} </span>
+                    <img v-if="isConnected && isAnAdmin" alt="Delete user" class="deleteIcon" src="@/assets/delete.svg" width="20" @click="deleteIngredient(mot.id)"/> 
                 </div>
             </div>
             <div v-else class="custom-spinner"></div>
         </div>
 
         <hr style="width: 100%;">
-            <!-- create new pizza -->
-        <div class="content">
-            <h1>Create new Pizza </h1>
-            <div> 
-                <div class="labels">
-                    <label>Name : </label>
-                    <input placeholder="name" type="text" v-model="pizzaToAdd"/>
+
+        <div  v-if="isConnected && isAnAdmin">
+             <!-- create new pizza -->
+            <div class="content">
+                <h1>Create new Pizza </h1>
+                <div> 
+                    <div class="labels">
+                        <label>Name : </label>
+                        <input placeholder="name" type="text" v-model="pizzaToAdd"/>
+                    </div>
+                    <div class="labels">
+                        <label>Price : </label>
+                        <input placeholder="price" type="number" v-model="priceToAdd"/>
+                    </div>
+                    <div class="labels">
+                        <button @click="addPizza(pizzaToAdd, priceToAdd)">Create</button>
+                    </div>
                 </div>
-                <div class="labels">
-                    <label>Price : </label>
-                    <input placeholder="price" type="number" v-model="priceToAdd"/>
+            </div>
+
+            <hr style="width: 100%;">
+                <!-- create new ingredient -->
+            <div class="content">
+                <h1>Create new Ingredient </h1>
+                <div> 
+                    <div class="labels">
+                        <label>Name : </label>
+                        <input placeholder="name" type="text" v-model="ingredientToAdd"/>
+                    </div>
+                    <div class="labels">
+                        <button @click="createIngredient(ingredientToAdd)">Create</button>
+                    </div>
                 </div>
-                <div class="labels">
-                    <button @click="addPizza(pizzaToAdd, priceToAdd)">Create</button>
-                </div>
-                
-                
             </div>
         </div>
-
-        <hr style="width: 100%;">
-            <!-- create new ingredient -->
-        <div class="content">
-            <h1>Create new Ingredient </h1>
-            <div> 
-                <div class="labels">
-                    <label>Name : </label>
-                    <input placeholder="name" type="text" v-model="ingredientToAdd"/>
-                </div>
-                <div class="labels">
-                    <button @click="createIngredient(ingredientToAdd)">Create</button>
-                </div>
-                
-            </div>
-        </div>
-
         
     </main>
 </template>
