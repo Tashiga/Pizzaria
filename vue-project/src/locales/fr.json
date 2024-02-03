@@ -8,5 +8,56 @@
     "home" : "Accueil",
     "amount" : "Montant",
     "members" : "Membres",
-    "welcome_to" : "Bienvenue à"
+
+    "welcome_to" : "Bienvenue à",
+    "welcome_msg1" : "Vous trouverez dans cette application, différents espace :",
+    "welcome_msg2" : "espace dédié aux admins",
+    "welcome_msg3" : "espace dédié aux clients",
+    "welcome_msg4" : "espace dédié aux staffs",
+
+    "Display all-f" : "Afficher toutes les",
+    "Display all-m" : "Afficher tous les",
+    "costs" : " coûte",
+    "Voici les ingredients du" : "Voici les ingrédients du",
+    "no_ingredients" : " n'a pas encore d'ingrédients.",
+    "close" : "Fermer",
+    "Create new-m" : "Créer un nouveau",
+    "Create new-f" : "Créer une nouvelle",
+    "Name" : "Nom",
+    "Price" : "Prix",
+    "Create" : "Créer",
+
+    "Search by" : "Rechercher par",
+    "First name" : "Prénom",
+    "Age" : "Âge",
+    "Salary per month" : "Salaire par mois",
+    "Working hours" : "Heures de travail",
+    "User details" : "Détails de l'utilisateur",
+    "Update" : "Modifier",
+
+    "Connection" : "Connexion",
+    "To log in" : "Se connecter",
+    "Password" : "Mot de passe",
+    "Username" : "Nom d'utilisateur",
+
+    "Profile" : "Profil",
+    "Your" : "Votre",
+    "mail address" : "adresse mail",
+    "salary" : "salaire",
+    "work time" : "temps de travail",
+    "Sign out" : "Se déconnecter",
+    "No users found" : "Aucun utilisateur trouvé",
+
+    "This is an about page" : "Ceci est une page à propos",
+
+    "created" : "créé",
+    "deleted" : "supprimé",
+    "updated" : "modifié",
+    "Something bad happened" : "Quelque chose de mal s'est passé.",
+    "cannot be negative" : "ne peut être négatif",
+    "Connection established" : "Connexion établie",
+    "Username/Password does not match" : "Identifiant/Mot de passe ne correspond pas.",
+    "Please try again" : "Veuillez réessayer.",
+    "Problem connecting" : "Problème lors de la connexion",
+    "You have been disconnected !" : "Vous avez bien été déconnecté !"
 }

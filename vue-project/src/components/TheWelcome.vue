@@ -10,11 +10,11 @@ import SupportIcon from './icons/IconSupport.vue'
 <template>
   <h1>{{ $t('welcome_to')}} CheesyPizza Topia !</h1>
   <br>
-  <span class="message">Vous trouverez dans cette application, différentes espace : 
+  <span class="message"> {{ $t('welcome_msg1')}} 
      <ul>
-      <li>espace dédié aux admins</li>
-      <li>espace dédié aux clients</li>
-      <li>espace dédié aux staffs</li>
+      <li> {{ $t('welcome_msg2')}}</li>
+      <li> {{ $t('welcome_msg3')}}</li>
+      <li> {{ $t('welcome_msg4')}}</li>
      </ul>
     </span>
 </template>

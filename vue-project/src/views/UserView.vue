@@ -7,7 +7,8 @@
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
     import { computed } from 'vue';
-    import { useStore } from 'vuex';  
+    import { useStore } from 'vuex'; 
+    import { useI18n } from 'vue-i18n'; 
 
     export default {
         setup() {
@@ -34,6 +35,8 @@
             let isConnected: Ref<boolean> = ref(false);
             let isAnAdmin: Ref<boolean> = ref(false);
 
+            const { t } = useI18n();
+
             onMounted(() => {
                 console.log('On essaye de récupérer les users');
                 fetchUsers();
@@ -59,7 +62,7 @@
                     console.log('get : ', staffs.value);
                 } catch (error) {
                     console.error(error); 
-                    toastr.error('Quelque chose s\'est mal passé');
+                    toastr.error(t('Something bad happened'));
                 }
             }
 
@@ -72,10 +75,10 @@
                     staff.id = response1.data.id;
                     const response = await staffService.addStaff(staff);
                     toggleButton();
-                    toastr.success('User created');
+                    toastr.success('User ' + t('created'));
                 } catch (error) {
                     console.error(error);
-                    toastr.error('Quelque chose s\'est mal passé');
+                    toastr.error(t('Something bad happened'));
                 }
             }
 
@@ -83,10 +86,10 @@
                 try {
                     const response = await staffService.deleteStaffbyId(userId);
                     const response2 = await UserService.deleteUserbyId(userId);
-                    toastr.success('User deleted');
+                    toastr.success('User ' + t('deleted'));
                 } catch (error) {
                     console.error(error);
-                    toastr.error('Quelque chose s\'est mal passé');
+                    toastr.error(t('Something bad happened'));
                 }
                 finally{
                     fetchUsers();
@@ -97,19 +100,19 @@
             async function updateUser(staff: Staff){
                 try {
                     if(staff.age && staff.age<=0) 
-                        throw new Error('Age ne peut être négatif ou null.');
+                        throw new Error('Age ' + t('cannot be negative'));
                     else if(staff.salaryPerMonth && staff.salaryPerMonth<0)
-                        throw new Error('SalaryPerMonth ne peut être négatif.');
+                        throw new Error('SalaryPerMonth ' + t('cannot be negative'));
                     else if(staff.workHours && staff.workHours<0)
-                        throw new Error('WorkHours ne peut être négatif.');
+                        throw new Error('WorkHours ' + t('cannot be negative'));
                     const response = await staffService.updateStaff(staff.id, staff);
                     const user: User = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.identifiant, staff.motDePasseHash);
                     const response2 = await UserService.updateUser(user.id, user);
                     showModal.value = false;
-                    toastr.success('User updated');
+                    toastr.success('User ' + t('updated'));
                 } catch (error) {
                     console.error(error);
-                    toastr.error('Quelque chose s\'est mal passé');
+                    toastr.error(t('Something bad happened'));
                 }
                 finally{
                     fetchUsers();
@@ -181,12 +184,12 @@
         <div>
             <div v-if="isConnected && isAnAdmin">
                 <div v-if="titleIsCreation">
-                    <h2 class="title">Create new user</h2>
-                    <img  alt="Return Back" class="icon delete moveToRight" src="@/assets/return-back.svg" width="20" @click="toggleButton()" title="Display all users"/>
+                    <h2 class="title">{{ $t('Create new-m')}} User</h2>
+                    <img  alt="Return Back" class="icon delete moveToRight" src="@/assets/return-back.svg" width="20" @click="toggleButton()" :title="$t('Display all-m') +' users'"/>
                 </div>
                 <div v-else>
-                    <h2 class="title">Display all users</h2>
-                    <img alt="Create user" class="icon delete moveToRight" src="@/assets/add.svg" width="20" @click="toggleButton()" title="Create new user"/> 
+                    <h2 class="title">{{ $t('Display all-m')}} Users</h2>
+                    <img alt="Create user" class="icon delete moveToRight" src="@/assets/add.svg" width="20" @click="toggleButton()" :title="$t('Create new-m')+' user'"/> 
                 </div>
             </div>
 
@@ -195,47 +198,47 @@
                 <!-- create new Staff -->
                 <div v-if="titleIsCreation">
                     <div class="labels">
-                        <label>Name : </label>
-                        <input type="text" placeholder="name" v-model="nameToAdd"/>
+                        <label>{{ $t('Name')}} : </label>
+                        <input type="text" v-model="nameToAdd"/>
                     </div>
                     <div class="labels">
-                        <label>Prénom : </label>
-                        <input type="text" placeholder="prenom" v-model="prenomToAdd"/>
+                        <label>{{ $t('First name')}} : </label>
+                        <input type="text" v-model="prenomToAdd"/>
                     </div>
                     <div class="labels">
-                        <label>Age : </label>
-                        <input type="text" placeholder="age" v-model="ageToAdd"/>
+                        <label>{{ $t('Age')}} : </label>
+                        <input type="text" v-model="ageToAdd"/>
                     </div>
                     <div class="labels">
-                        <label>Salary Per Month : </label>
-                        <input type="text" placeholder="Salary per month" v-model="salaryToAdd"/>
+                        <label>{{ $t('Salary per month')}} : </label>
+                        <input type="text" v-model="salaryToAdd"/>
                     </div>
                     <div class="labels">
-                        <label>Work Hours : </label>
-                        <input type="text" placeholder="work hours" v-model="workHoursAdd"/>
+                        <label>{{ $t('Working hours')}} : </label>
+                        <input type="text" v-model="workHoursAdd"/>
                     </div>
                     <div class="labels">
-                        <button @click="createNewMember(nameToAdd, prenomToAdd, ageToAdd, salaryToAdd,workHoursAdd)">Créer</button>
+                        <button @click="createNewMember(nameToAdd, prenomToAdd, ageToAdd, salaryToAdd,workHoursAdd)">{{ $t('Create') }}</button>
                     </div>
                 </div>
 
                 <div v-else>
-                    <span>Filter By Username : </span>
-                    <input type="text" v-model="filterText" class="filter" @input="updateFilter" placeholder="Rechercher par nom d'utilisateur" />
+                    <span>{{ $t('Search by') }} Username : </span>
+                    <input type="text" v-model="filterText" class="filter" @input="updateFilter" />
 
                     <!-- Modale -->
                     <div class="modal" v-if="showModal">
                         <div class="modal-content">
-                            <h2>Détails de l'utilisateur</h2>
+                            <h2>{{ $t('User details') }}</h2>
                             <div v-if="userToUpdate">
-                                <input type="text" placeholder="Nom" v-model="userToUpdate.nom"/>
-                                <input type="text" placeholder="Prénom" v-model="userToUpdate.prenom"/>
-                                <input type="text" placeholder="Age" v-model="userToUpdate.age"/>
-                                <input type="text" placeholder="SalaryPerMonth" v-model="userToUpdate.salaryPerMonth"/>
-                                <input type="text" placeholder="WorkHours" v-model="userToUpdate.workHours"/>
-                                <button @click="updateUser(userToUpdate)">Update</button>
+                                <input type="text" v-model="userToUpdate.nom"/>
+                                <input type="text" v-model="userToUpdate.prenom"/>
+                                <input type="text" v-model="userToUpdate.age"/>
+                                <input type="text" v-model="userToUpdate.salaryPerMonth"/>
+                                <input type="text" v-model="userToUpdate.workHours"/>
+                                <button @click="updateUser(userToUpdate)">{{ $t('Update') }}</button>
                             </div>
-                            <button @click="closeModal">Fermer</button>
+                            <button @click="closeModal">{{ $t('close') }}</button>
                         </div>
                     </div>
 
