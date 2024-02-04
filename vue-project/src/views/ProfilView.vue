@@ -7,12 +7,14 @@
     import { useRouter} from 'vue-router';
     import { computed } from 'vue';
     import { useStore } from 'vuex';  
-import type { ProfilUser } from '@/model/profilUser';
+    import type { ProfilUser } from '@/model/profilUser';
+    import { useI18n } from 'vue-i18n';
 
     const store = useStore();
     let userLogin: Ref<ProfilUser> |  Ref<null> = ref(null);
-      const router = useRouter();
-      let isAnAdmin : Ref<boolean> = ref(false);
+    const router = useRouter();
+    let isAnAdmin : Ref<boolean> = ref(false);
+    const { t } = useI18n();
 
     onMounted(async () => {
       const user = computed(() => store.getters.getUser);
@@ -35,7 +37,7 @@ import type { ProfilUser } from '@/model/profilUser';
     const logout = () => {
       // Appeler l'action de déconnexion
       store.dispatch('logoutUser');
-      toastr.success('Vous avez bien été déconnecté !');
+      toastr.success(t('You have been disconnected !'));
       router.push('/connexion');
     };
 
@@ -46,26 +48,25 @@ import type { ProfilUser } from '@/model/profilUser';
 
 <template>
   <div class="profil">
-    <h1>Profil</h1>
+    <h1>{{ $t('Profile') }}</h1>
     <div v-if="userLogin">
-      <span>Votre nom : {{ userLogin.nom }}</span> <br />
-      <span>Votre prénom : {{ userLogin.prenom }}</span> <br />
-      <span>Votre age : {{ userLogin.age }}</span> <br />
+      <span>{{ $t('Your') }} {{ $t('Name') }} : {{ userLogin.nom }}</span> <br />
+      <span>{{ $t('Your') }} {{ $t('First name') }} : {{ userLogin.prenom }}</span> <br />
+      <span>{{ $t('Your') }} {{ $t('Age') }} : {{ userLogin.age }}</span> <br />
 
       <div v-if="isAnAdmin"> 
-        <span>Votre adresse mail : {{ userLogin.adresseMail }}</span>
+        <span>{{ $t('Your') }} {{ $t('mail address') }} : {{ userLogin.adresseMail }}</span>
       </div>
 
       <div v-else>
-        <span>Votre salaire : {{ userLogin.salaryPerMonth }} euros</span> <br />
-        <span>Votre temps de travail : {{ userLogin.workHours }}</span><br />
+        <span>{{ $t('Your') }} {{ $t('salary') }} : {{ userLogin.salaryPerMonth }} euros</span> <br />
+        <span>{{ $t('Your') }} {{ $t('work time') }} : {{ userLogin.workHours }}</span><br />
       </div>
       
-      <button @click="logout">Déconnexion</button>
+      <button @click="logout">{{ $t('Sign out') }}</button>
     </div>
     <div v-else>
-      <p>Aucun utilisateur trouvé.</p>
-      <!-- Vous pouvez également rediriger l'utilisateur vers une page de connexion ici -->
+      <p>{{ $t('No users found') }}</p>
     </div>
   </div>
 </template>

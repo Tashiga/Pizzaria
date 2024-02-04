@@ -1,46 +1,38 @@
 import { createStore } from 'vuex';
 import { ProfilUser } from '@/model/profilUser';
+import {type Ref} from 'vue';
 
-// interface User {
-//   name: string;
-//   age: number;
-//   // ... autres propriétés d'utilisateur
-// }
 
 export default createStore({
-  // state: {
-  //   user: null as User | null,
-  // },
 
   state: {
     user: JSON.parse(localStorage.getItem('user') || 'null'),
+    language : JSON.parse(localStorage.getItem('language') || 'FR')
   },
   mutations: {
-    // SET_USER(state, user: User) {
-    //   console.log("set_user...", user);
-    //   state.user = user;
-    // },
-
     SET_USER(state: any, user: ProfilUser) {
       state.user = user;
-      // Sauvegarder dans LocalStorage
       localStorage.setItem('user', JSON.stringify(user));
     },
+    SET_LANGUAGE(state: any, language: String){
+      state.language = language;
+      localStorage.setItem('language', JSON.stringify(language));
+    }
   },
   actions: {
     loginUser({ commit }: any, user: ProfilUser) {
       console.log("loginUser...", user);
-      // Votre logique d'authentification et de récupération de l'utilisateur
-      commit('SET_USER', user);
-      // Sauvegarder dans LocalStorage
-      localStorage.setItem('user', JSON.stringify(user));
+      commit('SET_USER', user);//sauvegarde dans le store
+      localStorage.setItem('user', JSON.stringify(user)); //sauvegarde dans localStorage
     },
     logoutUser({ commit }: any) {
-      // Effacer les données dans le store
       commit('SET_USER', null);
-      // Effacer les données dans LocalStorage
       localStorage.removeItem('user');
     },
+    translate({ commit }: any, language: String) {
+      commit('SET_LANGUAGE', language);
+      localStorage.setItem('language', JSON.stringify(language));
+    }
   },
   getters: {
     getUser(state: any) {
@@ -48,10 +40,14 @@ export default createStore({
       return state.user;
     },
     isLoggedIn(state: any) {
-      return state.user !== null; // ajustez selon votre logique d'authentification
+      return state.user !== null;
     },
     isAdmin(state: any) {
       return state.user.adresseMail !== undefined;
+    },
+    getLanguage(state:any) : Ref<"FR" | "EN">{
+      console.log("language : ",state.language);
+      return state.language;
     }
   },
 });

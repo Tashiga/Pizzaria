@@ -8,13 +8,15 @@
     import { useStore } from 'vuex';
     import { computed } from 'vue';
     import type { ProfilUser } from '@/model/profilUser';
+    import { useI18n } from 'vue-i18n';
 
     const login: {'identifiant': string, 'motDePasseHash': string} = {
     "identifiant" : "",
     "motDePasseHash" : ""
 };
-const store = useStore();
-        const router = useRouter();
+    const store = useStore();
+    const router = useRouter();
+    const { t } = useI18n();
     onMounted(async () => {
         const user = computed(() => store.getters.getUser);
         if(user && user.value){
@@ -32,7 +34,7 @@ const store = useStore();
                         if(Object.keys(data.result).length > 0) {
                             console.log("data: ", data);
                             let user: any = data.result;
-                            toastr.success('Connexion établie !');
+                            toastr.success(t('Connection established'));
                             let test: ProfilUser = {
                                 id: user.id,
                                 nom: user.nom,
@@ -55,12 +57,12 @@ const store = useStore();
                             router.push('/profil');
                         }
                         else 
-                            toastr.error('Identifiant/Mot de passe ne correspond pas.\nVeuillez ressayer.');
+                            toastr.error(t('Username/Password does not match.') + '\n' + t('Please try again'));
                     }
                 });
             } catch (error) {
                 console.error(error);
-                toastr.error('Problème lors de la connexion')
+                toastr.error(t('Problem connecting'))
             }
         }
         
@@ -75,10 +77,10 @@ const store = useStore();
 
         <div class="connexionContent">
             <div class="form">
-                <h2>Connexion</h2>
-                <input type="text" class="connexionInputs" name="identifiant" placeholder="Nom d'utilisateur" v-model="login.identifiant" required>
-                <input type="password" class="connexionInputs" name="password" placeholder="Mot de passe" v-model="login.motDePasseHash" required>
-                <button class="connexionInputs connexionButton" @click="toLogIn()">Se Connecter</button>
+                <h2>{{ $t('Connection') }}</h2>
+                <input type="text" class="connexionInputs" name="identifiant" :placeholder="$t('Username')" v-model="login.identifiant" required>
+                <input type="password" class="connexionInputs" name="password" :placeholder="$t('Password')" v-model="login.motDePasseHash" required>
+                <button class="connexionInputs connexionButton" @click="toLogIn()">{{ $t('To log in') }}</button>
                 <!-- <input type="submit" value="Se connecter"> -->
             </div>
                 

@@ -7,6 +7,7 @@
     import 'toastr/build/toastr.min.css';
     import { computed } from 'vue';
     import { useStore } from 'vuex';  
+    import { useI18n } from 'vue-i18n';
 
     const pizzas: Ref<Pizza[]|undefined> = ref();
     const ingredients: Ref<Ingredient[]|undefined> = ref();
@@ -21,6 +22,7 @@
     const store = useStore();
     let isConnected: Ref<boolean> = ref(false);
     let isAnAdmin: Ref<boolean> = ref(false);
+    const { t } = useI18n();
 
     onMounted(async () => {
         await fetchPizzas();
@@ -86,7 +88,7 @@
             } catch (error) {
                 console.error(error); 
             }
-            toastr.success('Pizza created !');
+            toastr.success('Pizza '+ t('created') + ' !');
             pizzaToAdd.value = "";
             priceToAdd.value = 0;
         }
@@ -104,9 +106,9 @@
                 const response = await IngredientService.addIngredient(ingredient);
             } catch (error) {
                 console.error(error);
-                toastr.error('Quelque chose de mal s\'est passé à la création.');
+                toastr.error(t('Something bad happened'));
             }
-            toastr.success('Ingredient created !');
+            toastr.success('Ingredient '+ t('created') + ' !');
             fetchIngredients();
         }
     }
@@ -114,7 +116,7 @@
     async function deleteIngredient(ingredientId: number) {
         try {
             const response = await IngredientService.deleteIngredientbyId(ingredientId);
-            toastr.success('Ingrédient supprimé');
+            toastr.success('Ingrédient '+ t('deleted'));
         } catch (error) {
             console.error(error);
         }
@@ -144,10 +146,10 @@
 
         <!-- Display all pizzas -->
         <div class="content">
-            <h1>Display all Pizzas</h1>
+            <h1>{{ $t('Display all-f') }} Pizzas</h1>
             <div v-if="!loading">
                 <div v-for="(pizza, index) in getPizzas()" :key="index" class="motsPizza"> 
-                    {{ pizza.name }}, coûte {{ pizza.price }} euros.
+                    {{ pizza.name }} {{ $t('costs') }} {{ pizza.price }} €
                     <img alt="Display ingredient of Pizza" width="20" src="@/assets/info.svg" @click="viewIngredients(pizza)" /> 
                 </div>
             </div>
@@ -157,16 +159,16 @@
             <div class="modal" v-if="showModal">
                 <div class="modal-content" >
                     <div v-if="PizzaIngredients">
-                        <h2>Voici les ingrédients du {{ pizzaToShow.name }}</h2>
+                        <h2>{{ $t('Voici les ingredients du') }} {{ pizzaToShow.name }}</h2>
                         <ul >
                             <li v-for="ing in PizzaIngredients"> {{ ing.name }}</li>
                         </ul>
                     </div>
                     <div v-else>
-                        <h2>{{ pizzaToShow.name }} n'a pas encore d'ingrédients.</h2>
+                        <h2>{{ pizzaToShow.name }} {{ $t('no_ingredients') }}</h2>
                     </div>
                     <!-- Bouton pour fermer la modale -->
-                    <button @click="closeModal">Fermer</button>
+                    <button @click="closeModal">{{ $t('close') }}</button>
                 </div>
             </div>
 
@@ -176,7 +178,7 @@
 
         <!-- Display all ingredients -->
         <div class="content">
-            <h1>Display all Ingredients</h1>
+            <h1>{{ $t('Display all-m') }} Ingredients</h1>
             <div v-if="!loadIngredients">
                 <div v-for="(mot, index) in getIngredients()" :key="index" class="mot"> 
                     <span> {{ mot.name }} </span>
@@ -191,18 +193,18 @@
         <div  v-if="isConnected && isAnAdmin">
              <!-- create new pizza -->
             <div class="content">
-                <h1>Create new Pizza </h1>
+                <h1> {{ $t('Create new-f') }} Pizza </h1>
                 <div> 
                     <div class="labels">
-                        <label>Name : </label>
-                        <input placeholder="name" type="text" v-model="pizzaToAdd"/>
+                        <label>{{ $t('Name') }} : </label>
+                        <input type="text" v-model="pizzaToAdd"/>
                     </div>
                     <div class="labels">
-                        <label>Price : </label>
+                        <label>{{ $t('Price') }} : </label>
                         <input placeholder="price" type="number" v-model="priceToAdd"/>
                     </div>
                     <div class="labels">
-                        <button @click="addPizza(pizzaToAdd, priceToAdd)">Create</button>
+                        <button @click="addPizza(pizzaToAdd, priceToAdd)">{{ $t('Create') }}</button>
                     </div>
                 </div>
             </div>
@@ -210,14 +212,14 @@
             <hr style="width: 100%;">
                 <!-- create new ingredient -->
             <div class="content">
-                <h1>Create new Ingredient </h1>
+                <h1>{{ $t('Create new-m') }} Ingredient </h1>
                 <div> 
                     <div class="labels">
-                        <label>Name : </label>
-                        <input placeholder="name" type="text" v-model="ingredientToAdd"/>
+                        <label>{{ $t('Name') }} : </label>
+                        <input type="text" v-model="ingredientToAdd"/>
                     </div>
                     <div class="labels">
-                        <button @click="createIngredient(ingredientToAdd)">Create</button>
+                        <button @click="createIngredient(ingredientToAdd)">{{ $t('Create') }}</button>
                     </div>
                 </div>
             </div>
