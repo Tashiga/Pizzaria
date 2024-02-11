@@ -254,7 +254,7 @@
                                 <td v-for="(col, i) in u" :key="i">
                                     {{ col }}
                                 </td>
-                                <img v-if="isConnected" alt="Update user" class="delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
+                                <img v-if="isConnected && isAnAdmin" alt="Update user" class="delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
                                 <img v-if="isConnected && isAnAdmin" alt="Delete user" class="delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>
                         </tbody>
