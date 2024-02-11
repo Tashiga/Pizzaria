@@ -2,6 +2,7 @@
 <script setup lang="ts">
     import { ref, type Ref , onMounted, getCurrentInstance} from 'vue';
     import CreatePizza from '../components/CreatePizza.vue';
+    import CreateUser from './CreateUser.vue';
 
     onMounted(async () => {
     });
@@ -15,9 +16,15 @@
             <!-- <span>Vous etes un admin et voici votre tableau de bord ! Vous trouverez toutes les actions que vous pouvez
                 executer en tant qu'Admin. Merci de faire bon usage.
             </span> -->
-            <div class="composant" style="font-size: 0.8em; width: 30%; border: 0.5px solid white">
+            <div>
+                <div class="composant blocks">
                 <CreatePizza/>
+                </div>
+                <div class="composant blocks" style="padding: 10px;">
+                    <CreateUser/>
+                </div>
             </div>
+            
             
         </div>
         
@@ -25,6 +32,14 @@
 </template>
 
 <style>
+
+.blocks{
+    font-size: 0.8em; 
+    width: 30%; 
+    border: 0.5px solid white; 
+    display: inline-block;
+    vertical-align: top;
+}
 
 .composant{
     font-size: 0.8em; 

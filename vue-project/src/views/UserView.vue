@@ -9,173 +9,158 @@
     import { computed } from 'vue';
     import { useStore } from 'vuex'; 
     import { useI18n } from 'vue-i18n'; 
+    import CreateUser from '@/components/CreateUser.vue';
 
     export default {
-        setup() {
-
-            //vars
-            const staffs: Ref<Staff[]|undefined> = ref();
-            let titleIsCreation: Ref<Boolean> = ref(false);
-            const userCol: Ref<String[]> = ref(['id', 'nom','prenom', 'age', 'salaryPerMonth', 'workHours']);
-            const filterText = ref('');
-            const toggleButton = () => {
-                titleIsCreation.value = !titleIsCreation.value;
-                if(!titleIsCreation.value) {
-                    fetchUsers();
-                }
-            };
-
-            //for create new user
-            const nameToAdd: Ref<string> = ref('');
-            const prenomToAdd: Ref<string>  = ref('');
-            const ageToAdd: Ref<number|null> = ref(null);
-            const salaryToAdd: Ref<number|null> = ref(null);
-            const workHoursAdd: Ref<number|null> = ref(null);
-            const store = useStore();
-            let isConnected: Ref<boolean> = ref(false);
-            let isAnAdmin: Ref<boolean> = ref(false);
-
-            const { t } = useI18n();
-
-            onMounted(() => {
-                console.log('On essaye de récupérer les users');
+    setup() {
+        //vars
+        const staffs: Ref<Staff[] | undefined> = ref();
+        let titleIsCreation: Ref<Boolean> = ref(false);
+        const userCol: Ref<String[]> = ref(['id', 'nom', 'prenom', 'age', 'salaryPerMonth', 'workHours']);
+        const filterText = ref('');
+        const toggleButton = () => {
+            titleIsCreation.value = !titleIsCreation.value;
+            if (!titleIsCreation.value) {
                 fetchUsers();
-                console.log('récupération vaut : ', staffs);
-                const loger = computed(() => store.getters.isLoggedIn);
-                const isAdmin = computed(() => store.getters.isAdmin);
-                if(loger && loger.value){
-                    isConnected.value = true;
-                    if(isAdmin && isAdmin.value)
-                        isAnAdmin.value = true;
-                }
-            });
-            
-
-            //functions
-            async function fetchUsers() {
-                try {
-                    console.log('try to get user [front]');
-                    const response = await staffService.getStaffs().then(response => {
-                        staffs.value = Object.values(response.data);
-                        filteredUsers();
-                    });
-                    console.log('get : ', staffs.value);
-                } catch (error) {
-                    console.error(error); 
-                    toastr.error(t('Something bad happened'));
-                }
             }
-
-            async function addUser(staff: Staff) {
-                try {
-                    const user = new User(staff.id, staff.nom, staff.prenom, staff.age,staff.identifiant, staff.motDePasseHash);
-                    const response1 = await UserService.addUser(user);
-                    console.log("user created : ", user);
-                    console.log('response : ', response1);
-                    staff.id = response1.data.id;
-                    const response = await staffService.addStaff(staff);
-                    toggleButton();
-                    toastr.success('User ' + t('created'));
-                } catch (error) {
-                    console.error(error);
-                    toastr.error(t('Something bad happened'));
-                }
+        };
+        //for create new user
+        const nameToAdd: Ref<string> = ref('');
+        const prenomToAdd: Ref<string> = ref('');
+        const ageToAdd: Ref<number | null> = ref(null);
+        const salaryToAdd: Ref<number | null> = ref(null);
+        const workHoursAdd: Ref<number | null> = ref(null);
+        const store = useStore();
+        let isConnected: Ref<boolean> = ref(false);
+        let isAnAdmin: Ref<boolean> = ref(false);
+        const { t } = useI18n();
+        onMounted(() => {
+            console.log('On essaye de récupérer les users');
+            fetchUsers();
+            console.log('récupération vaut : ', staffs);
+            const loger = computed(() => store.getters.isLoggedIn);
+            const isAdmin = computed(() => store.getters.isAdmin);
+            if (loger && loger.value) {
+                isConnected.value = true;
+                if (isAdmin && isAdmin.value)
+                    isAnAdmin.value = true;
             }
-
-            async function deleteUser(userId: number) {
-                try {
-                    const response = await staffService.deleteStaffbyId(userId);
-                    const response2 = await UserService.deleteUserbyId(userId);
-                    toastr.success('User ' + t('deleted'));
-                } catch (error) {
-                    console.error(error);
-                    toastr.error(t('Something bad happened'));
-                }
-                finally{
-                    fetchUsers();
-                }
-
+        });
+        //functions
+        async function fetchUsers() {
+            try {
+                console.log('try to get user [front]');
+                const response = await staffService.getStaffs().then(response => {
+                    staffs.value = Object.values(response.data);
+                    filteredUsers();
+                });
+                console.log('get : ', staffs.value);
             }
-
-            async function updateUser(staff: Staff){
-                try {
-                    if(staff.age && staff.age<=0) 
-                        throw new Error('Age ' + t('cannot be negative'));
-                    else if(staff.salaryPerMonth && staff.salaryPerMonth<0)
-                        throw new Error('SalaryPerMonth ' + t('cannot be negative'));
-                    else if(staff.workHours && staff.workHours<0)
-                        throw new Error('WorkHours ' + t('cannot be negative'));
-                    const response = await staffService.updateStaff(staff.id, staff);
-                    const user: User = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.identifiant, staff.motDePasseHash);
-                    const response2 = await UserService.updateUser(user.id, user);
-                    showModal.value = false;
-                    toastr.success('User ' + t('updated'));
-                } catch (error) {
-                    console.error(error);
-                    toastr.error(t('Something bad happened'));
-                }
-                finally{
-                    fetchUsers();
-                }
+            catch (error) {
+                console.error(error);
+                toastr.error(t('Something bad happened'));
             }
-
-            // // function getSrcOfPhoto(photo: string) : string {
-            // //     return '@/assets/' + photo;
-            // // }
-
-            function createNewMember(nom: string, prenom: string, age: number | null, salaryPerMonth: number| null, workHours: number| null) {
-                if(age === null)
-                    age =0;
-                if(salaryPerMonth === null)
-                    salaryPerMonth = 0;
-                if(workHours  === null)
-                    workHours = 0;
-                const user: Staff = new Staff(0, nom, prenom, age, salaryPerMonth, workHours);
-                addUser(user);
+        }
+        async function addUser(staff: Staff) {
+            try {
+                const user = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.identifiant, staff.motDePasseHash);
+                const response1 = await UserService.addUser(user);
+                console.log("user created : ", user);
+                console.log('response : ', response1);
+                staff.id = response1.data.id;
+                const response = await staffService.addStaff(staff);
+                toggleButton();
+                toastr.success('User ' + t('created'));
             }
-
-            function getUsers(): Staff[] {
-                let v : Staff[][] | any = staffs.value;
-                return v[0];
+            catch (error) {
+                console.error(error);
+                toastr.error(t('Something bad happened'));
             }
-            
-            // modal
-            let showModal: Ref<Boolean> = ref(false);
-            let userToUpdate: Ref<Staff> = ref(new Staff(0, '', '', 0, 0, 0, ));
-
-            function toggleButtonModal (user: Staff)  {
-                showModal.value = !showModal.value;
-                userToUpdate.value = new Staff(user.id, user.nom, user.prenom, user.age, user.salaryPerMonth, user.workHours);
-            };
-
-
-            function closeModal() {
+        }
+        async function deleteUser(userId: number) {
+            try {
+                const response = await staffService.deleteStaffbyId(userId);
+                const response2 = await UserService.deleteUserbyId(userId);
+                toastr.success('User ' + t('deleted'));
+            }
+            catch (error) {
+                console.error(error);
+                toastr.error(t('Something bad happened'));
+            }
+            finally {
+                fetchUsers();
+            }
+        }
+        async function updateUser(staff: Staff) {
+            try {
+                if (staff.age && staff.age <= 0)
+                    throw new Error('Age ' + t('cannot be negative'));
+                else if (staff.salaryPerMonth && staff.salaryPerMonth < 0)
+                    throw new Error('SalaryPerMonth ' + t('cannot be negative'));
+                else if (staff.workHours && staff.workHours < 0)
+                    throw new Error('WorkHours ' + t('cannot be negative'));
+                const response = await staffService.updateStaff(staff.id, staff);
+                const user: User = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.identifiant, staff.motDePasseHash);
+                const response2 = await UserService.updateUser(user.id, user);
                 showModal.value = false;
+                toastr.success('User ' + t('updated'));
             }
-
-            const filteredUsers = () => {
-                if(filterText.value !== '') 
-                    return getUsers().filter(user =>
-                        user.nom.toLowerCase().includes(filterText.value.toLowerCase()) || user.prenom.toLowerCase().includes(filterText.value.toLocaleLowerCase())
-                    );
-                else
-                    return getUsers();
-            };
-
-            function updateFilter(event: InputEvent| any) {
-                filterText.value = (event.target as HTMLInputElement).value;
-                filteredUsers();
+            catch (error) {
+                console.error(error);
+                toastr.error(t('Something bad happened'));
             }
-
-            return {staffs,
-                 titleIsCreation, userCol,
-                nameToAdd, prenomToAdd, ageToAdd, salaryToAdd, workHoursAdd,
-                deleteUser, createNewMember, getUsers, updateUser, toggleButton, 
-                closeModal, showModal, toggleButtonModal, userToUpdate,
-                filterText, filteredUsers, updateFilter, isConnected, isAnAdmin
-            };
-        },
-    };
+            finally {
+                fetchUsers();
+            }
+        }
+        // // function getSrcOfPhoto(photo: string) : string {
+        // //     return '@/assets/' + photo;
+        // // }
+        function createNewMember(nom: string, prenom: string, age: number | null, salaryPerMonth: number | null, workHours: number | null) {
+            if (age === null)
+                age = 0;
+            if (salaryPerMonth === null)
+                salaryPerMonth = 0;
+            if (workHours === null)
+                workHours = 0;
+            const user: Staff = new Staff(0, nom, prenom, age, salaryPerMonth, workHours);
+            addUser(user);
+        }
+        function getUsers(): Staff[] {
+            let v: Staff[][] | any = staffs.value;
+            return v[0];
+        }
+        // modal
+        let showModal: Ref<Boolean> = ref(false);
+        let userToUpdate: Ref<Staff> = ref(new Staff(0, '', '', 0, 0, 0));
+        function toggleButtonModal(user: Staff) {
+            showModal.value = !showModal.value;
+            userToUpdate.value = new Staff(user.id, user.nom, user.prenom, user.age, user.salaryPerMonth, user.workHours);
+        }
+        ;
+        function closeModal() {
+            showModal.value = false;
+        }
+        const filteredUsers = () => {
+            if (filterText.value !== '')
+                return getUsers().filter(user => user.nom.toLowerCase().includes(filterText.value.toLowerCase()) || user.prenom.toLowerCase().includes(filterText.value.toLocaleLowerCase()));
+            else
+                return getUsers();
+        };
+        function updateFilter(event: InputEvent | any) {
+            filterText.value = (event.target as HTMLInputElement).value;
+            filteredUsers();
+        }
+        return { staffs,
+            titleIsCreation, userCol,
+            nameToAdd, prenomToAdd, ageToAdd, salaryToAdd, workHoursAdd,
+            deleteUser, createNewMember, getUsers, updateUser, toggleButton,
+            closeModal, showModal, toggleButtonModal, userToUpdate,
+            filterText, filteredUsers, updateFilter, isConnected, isAnAdmin
+        };
+    },
+    components: { CreateUser }
+};
     
 </script>
 
@@ -184,7 +169,7 @@
         <div>
             <div v-if="isConnected && isAnAdmin">
                 <div v-if="titleIsCreation">
-                    <h2 class="title">{{ $t('Create new-m')}} User</h2>
+                    <!-- <h2 class="title">{{ $t('Create new-m')}} User</h2> -->
                     <img  alt="Return Back" class="icon delete moveToRight" src="@/assets/return-back.svg" width="20" @click="toggleButton()" :title="$t('Display all-m') +' users'"/>
                 </div>
                 <div v-else>
@@ -197,7 +182,7 @@
             <div>
                 <!-- create new Staff -->
                 <div v-if="titleIsCreation">
-                    <div class="labels">
+                    <!-- <div class="labels">
                         <label>{{ $t('Name')}} : </label>
                         <input type="text" v-model="nameToAdd"/>
                     </div>
@@ -219,7 +204,10 @@
                     </div>
                     <div class="labels">
                         <button @click="createNewMember(nameToAdd, prenomToAdd, ageToAdd, salaryToAdd,workHoursAdd)">{{ $t('Create') }}</button>
-                    </div>
+                    </div> -->
+
+                    <CreateUser/>
+                    
                 </div>
 
                 <div v-else>

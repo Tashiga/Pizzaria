@@ -13,7 +13,7 @@
     let isAnAdmin: Ref<boolean> = ref(false);
     const store = useStore();
     const pizzaToAdd: Ref<string> = ref('');
-    const priceToAdd: Ref<number> = ref(0);      
+    const priceToAdd: Ref<number|null> = ref(null);      
     const ingredientToAdd: Ref<string> = ref(''); 
     const { t } = useI18n();
     let instance: any;
@@ -31,8 +31,10 @@
         console.log("instance : ", instance);
     });
 
-    async function addPizza(newPizza: string, newPrice: number){
-        if(newPrice>0) {
+    async function addPizza(newPizza: string, newPrice: number| null){
+        if(newPrice === null || newPrice == 0)
+            toastr.warning(t('Please enter all fields'));
+        else if(newPrice>0) {
             if (instance) {
                 const { emit } = instance;
                 let pizza: Pizza = {
@@ -48,7 +50,7 @@
                 toastr.success('Pizza '+ t('created') + ' !');
                 emit('pizzaCreated', pizza);
                 pizzaToAdd.value = "";
-                priceToAdd.value = 0;
+                priceToAdd.value = null;
             }
         }
     }
@@ -91,7 +93,7 @@
                     </div>
                     <div class="labels">
                         <label>{{ $t('Price') }} : </label>
-                        <input placeholder="price" type="number" v-model="priceToAdd"/>
+                        <input type="number" v-model="priceToAdd"/>
                     </div>
                     <div class="labels">
                         <button @click="addPizza(pizzaToAdd, priceToAdd)">{{ $t('Create') }}</button>

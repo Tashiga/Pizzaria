@@ -61,5 +61,6 @@
     "Problem connecting" : "Problème lors de la connexion",
     "You have been disconnected !" : "Vous avez bien été déconnecté !",
 
-    "errorMessage" : "Désolé ! Cette page est introuvable. \n Veuillez vérifier votre adresse URL."
+    "errorMessage" : "Désolé ! Cette page est introuvable. \n Veuillez vérifier votre adresse URL.",
+    "Please enter the price" : "Veuillez renseigner tous les champs."
 }

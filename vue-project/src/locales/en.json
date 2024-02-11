@@ -60,5 +60,6 @@
     "Problem connecting" : "Problem connecting",
     "You have been disconnected !": "You have been disconnected !",
 
-    "errorMessage": "Sorry ! this page could not be found. \n Please check your url address."
+    "errorMessage": "Sorry ! this page could not be found. \n Please check your url address.",
+    "Please enter all fields" : "Please enter all fields."
 }
