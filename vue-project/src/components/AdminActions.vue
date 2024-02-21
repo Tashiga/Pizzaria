@@ -2,7 +2,8 @@
 <script setup lang="ts">
     import { ref, type Ref , onMounted, getCurrentInstance} from 'vue';
     import CreatePizza from '../components/CreatePizza.vue';
-    import CreateUser from './CreateUser.vue';
+    import CreateUser from '../components/CreateUser.vue';
+    import CreateAccount from '../components/CreateAccount.vue';
 
     onMounted(async () => {
     });
@@ -18,10 +19,13 @@
             </span> -->
             <div>
                 <div class="composant blocks">
-                <CreatePizza/>
+                    <CreatePizza/>
                 </div>
                 <div class="composant blocks" style="padding: 10px;">
                     <CreateUser/>
+                </div>
+                <div class="composant blocks" style="padding: 10px; width: 40%;">
+                    <CreateAccount/>
                 </div>
             </div>
             

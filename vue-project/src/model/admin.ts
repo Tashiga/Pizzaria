@@ -1,6 +1,6 @@
 import { User } from './user';
 
-class Admin extends User {
+export class Admin extends User {
     adresseMail: string;
 
     constructor(id: number, nom: string, prenom: string, age: number, identifiant: string, motDePasse: string, adresseMail: string) {

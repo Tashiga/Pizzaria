@@ -1,0 +1,84 @@
+<script setup lang="ts">
+    import { ref, type Ref , onMounted, getCurrentInstance} from 'vue';
+    import { useI18n } from 'vue-i18n'; 
+    import {Staff} from '@/model/staff';
+    import {User} from '@/model/user';
+    import UserService from '@/api/userService';
+    import staffService from '@/api/staffService';
+    import {Admin} from '@/model/admin';
+    import toastr from 'toastr';
+
+    const { t } = useI18n();
+    const TYPE :string[] = ['Staff', 'Admin'];
+    const NAV : Ref<string> = ref('Staff');
+    const USER: User = 
+    {
+        id: 0,
+        nom: '', 
+        prenom : '',
+        age : 18,
+        identifiant: '',
+        motDePasseHash : ''
+    };
+    const EMAIL: Ref<string> = ref('');
+   
+    onMounted(async () => {
+
+    });
+
+    function createAccount() {
+        console.log('user : ', USER);
+        if(NAV.value==='Admin')
+            console.log('mail : ', EMAIL);
+        toastr.warning('try to create account !');
+    }
+
+    function handleNavChange(event: Event) {
+      const target = event.target as HTMLSelectElement;
+      const value = target.value;
+      NAV.value = value;
+      console.log("changed : ", NAV.value);
+    }
+
+
+</script>
+
+<template>
+    <h1 class="title">{{ $t('Create an account')}}</h1>
+    <form @submit.prevent="createAccount()">
+        <span>{{ $t('Type of account')}} : </span>
+        <select v-model="NAV" @change="handleNavChange">
+            <option v-for="(type, index) in TYPE"  :key="index" class="nav" :value="type">{{ type }}</option >
+        </select>
+        <br/>
+        <span>{{ $t('Name')}} : </span>
+        <input type="text" v-model="USER.nom" required/><br/>
+        <span>{{ $t('First name')}} : </span>
+        <input type="text" v-model="USER.prenom" required/><br/>
+        <span>{{ $t('Age')}} : </span>
+        <input type="number" v-model="USER.age" max="80" required/><br/> <!-- max age : 80 -->
+        <div v-if="NAV=='Admin'">
+            <span>{{ $t('mail address')}} : </span>
+            <input type="email" v-model="EMAIL" required/>
+            <br/>
+        </div>
+        
+        <span>{{ $t('Username')}} : </span>
+        <input type="text" v-model="USER.identifiant" required/><br/>
+        <span>{{ $t('Password')}}: </span>
+        <input type="password" v-model="USER.motDePasseHash" required/><br/><br/>
+        <button type="submit">{{ $t('Create an account')}}</button>
+    </form>
+    
+
+    
+
+</template>
+
+<style>
+
+h3:hover{
+    font-size: large;
+    color: red;
+}
+</style>

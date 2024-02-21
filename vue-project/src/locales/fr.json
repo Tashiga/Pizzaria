@@ -42,7 +42,7 @@
 
     "Profile" : "Profil",
     "Your" : "Votre",
-    "mail address" : "adresse mail",
+    "mail address" : "Adresse mail",
     "salary" : "salaire",
     "work time" : "temps de travail",
     "Sign out" : "Se déconnecter",
@@ -62,5 +62,8 @@
     "You have been disconnected !" : "Vous avez bien été déconnecté !",
 
     "errorMessage" : "Désolé ! Cette page est introuvable. \n Veuillez vérifier votre adresse URL.",
-    "Please enter the price" : "Veuillez renseigner tous les champs."
+    "Please enter the price" : "Veuillez renseigner tous les champs.",
+
+    "Create an account" : "Créer un compte",
+    "Type of account" : "Type de compte"
 }
