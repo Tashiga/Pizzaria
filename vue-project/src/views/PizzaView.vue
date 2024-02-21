@@ -8,6 +8,7 @@
     import { computed } from 'vue';
     import { useStore } from 'vuex';  
     import { useI18n } from 'vue-i18n';
+    import CreatePizza from '../components/CreatePizza.vue'
 
     const pizzas: Ref<Pizza[]|undefined> = ref();
     const ingredients: Ref<Ingredient[]|undefined> = ref();
@@ -76,43 +77,6 @@
         return w === undefined ? [] : w[0];
     }
 
-    async function addPizza(newPizza: string, newPrice: number){
-        if(newPrice>0) {
-            let pizza: Pizza = {
-                id: 0,
-                name: newPizza,
-                price: newPrice
-            }
-            try {
-                const response = await PizzaService.addPizza(pizza);
-            } catch (error) {
-                console.error(error); 
-            }
-            toastr.success('Pizza '+ t('created') + ' !');
-            pizzaToAdd.value = "";
-            priceToAdd.value = 0;
-        }
-        fetchPizzas();
-        // pizzas.value.push({name: newPizza, price: newPrice});
-    }
-
-    async function createIngredient(newIngredient: string) {
-        if(newIngredient != null){
-            let ingredient: Ingredient = {
-                id: 0,
-                name: newIngredient
-            }
-            try{
-                const response = await IngredientService.addIngredient(ingredient);
-            } catch (error) {
-                console.error(error);
-                toastr.error(t('Something bad happened'));
-            }
-            toastr.success('Ingredient '+ t('created') + ' !');
-            fetchIngredients();
-        }
-    }
-
     async function deleteIngredient(ingredientId: number) {
         try {
             const response = await IngredientService.deleteIngredientbyId(ingredientId);
@@ -138,11 +102,21 @@
         PizzaIngredients.value = [];
     }
 
+    function updatePizzaList() {
+      fetchPizzas();
+    }
+
+    function updateIngredientList() {
+        fetchIngredients();
+    }
+
 
 </script>
 
 <template>
     <main>
+
+        
 
         <!-- Display all pizzas -->
         <div class="content">
@@ -190,40 +164,7 @@
 
         <hr style="width: 100%;">
 
-        <div  v-if="isConnected && isAnAdmin">
-             <!-- create new pizza -->
-            <div class="content">
-                <h1> {{ $t('Create new-f') }} Pizza </h1>
-                <div> 
-                    <div class="labels">
-                        <label>{{ $t('Name') }} : </label>
-                        <input type="text" v-model="pizzaToAdd"/>
-                    </div>
-                    <div class="labels">
-                        <label>{{ $t('Price') }} : </label>
-                        <input placeholder="price" type="number" v-model="priceToAdd"/>
-                    </div>
-                    <div class="labels">
-                        <button @click="addPizza(pizzaToAdd, priceToAdd)">{{ $t('Create') }}</button>
-                    </div>
-                </div>
-            </div>
-
-            <hr style="width: 100%;">
-                <!-- create new ingredient -->
-            <div class="content">
-                <h1>{{ $t('Create new-m') }} Ingredient </h1>
-                <div> 
-                    <div class="labels">
-                        <label>{{ $t('Name') }} : </label>
-                        <input type="text" v-model="ingredientToAdd"/>
-                    </div>
-                    <div class="labels">
-                        <button @click="createIngredient(ingredientToAdd)">{{ $t('Create') }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <CreatePizza @pizzaCreated="updatePizzaList" @ingredientCreated="updateIngredientList"/>
         
     </main>
 </template>

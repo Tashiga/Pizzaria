@@ -59,5 +59,8 @@
     "Username/Password does not match" : "Identifiant/Mot de passe ne correspond pas.",
     "Please try again" : "Veuillez réessayer.",
     "Problem connecting" : "Problème lors de la connexion",
-    "You have been disconnected !" : "Vous avez bien été déconnecté !"
+    "You have been disconnected !" : "Vous avez bien été déconnecté !",
+
+    "errorMessage" : "Désolé ! Cette page est introuvable. \n Veuillez vérifier votre adresse URL.",
+    "Please enter the price" : "Veuillez renseigner tous les champs."
 }

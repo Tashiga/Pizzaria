@@ -6,6 +6,7 @@ import UserView from '../views/UserView.vue';
 import ConnectionView from '../views/ConnectionView.vue';
 import ProfilView from '../views/ProfilView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import ErrorView from '../views/ErrorView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +53,12 @@ const router = createRouter({
       path: '/settings',
       name: 'SettingsView',
       component: SettingsView
+    },
+    
+    {
+      path: '/:pathMatch(.*)*', // Cette route capturera toutes les URL non définies
+      name: 'ErrorView',
+      component: ErrorView
     }
   ]
 })
