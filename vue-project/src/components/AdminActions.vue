@@ -52,16 +52,22 @@
 }
 
 .composant input {
-    width: 60%;
+    width: 50%;
     font-size: 0.9em;
 }
 
 .composant h1{
     font-size: 1.5em;
+    margin-bottom: 15px;
 }
 
 .composant button{
     font-size: 1em;
+}
+
+.composant .labels{
+    margin:0px;
+    margin-bottom:2px;
 }
 
 </style>

@@ -55,31 +55,33 @@
 </script>
 
 <template>
-    <h2 class="title">{{ $t('Create new-m')}} User</h2>
-    <!-- create new Staff -->
-    <div>
-        <div class="labels">
-            <label>{{ $t('Name')}} : </label>
-            <input type="text" v-model="nameToAdd"/>
-        </div>
-        <div class="labels">
-            <label>{{ $t('First name')}} : </label>
-            <input type="text" v-model="prenomToAdd"/>
-        </div>
-        <div class="labels">
-            <label>{{ $t('Age')}} : </label>
-            <input type="text" v-model="ageToAdd"/>
-        </div>
-        <div class="labels">
-            <label>{{ $t('Salary per month')}} : </label>
-            <input type="text" v-model="salaryToAdd"/>
-        </div>
-        <div class="labels">
-            <label>{{ $t('Working hours')}} : </label>
-            <input type="text" v-model="workHoursAdd"/>
-        </div>
-        <div class="labels">
-            <button @click="createNewMember(nameToAdd, prenomToAdd, ageToAdd, salaryToAdd,workHoursAdd)">{{ $t('Create') }}</button>
+    <div class="content">
+        <h1 class="title">{{ $t('Create new-m')}} User</h1>
+        <!-- create new Staff -->
+        <div>
+            <div class="labels">
+                <label>{{ $t('Name')}} : </label>
+                <input type="text" v-model="nameToAdd"/>
+            </div>
+            <div class="labels">
+                <label>{{ $t('First name')}} : </label>
+                <input type="text" v-model="prenomToAdd"/>
+            </div>
+            <div class="labels">
+                <label>{{ $t('Age')}} : </label>
+                <input type="text" v-model="ageToAdd"/>
+            </div>
+            <div class="labels">
+                <label>{{ $t('Salary per month')}} : </label>
+                <input type="text" v-model="salaryToAdd"/>
+            </div>
+            <div class="labels">
+                <label>{{ $t('Working hours')}} : </label>
+                <input type="text" v-model="workHoursAdd"/>
+            </div>
+            <div class="labels">
+                <button @click="createNewMember(nameToAdd, prenomToAdd, ageToAdd, salaryToAdd,workHoursAdd)">{{ $t('Create') }}</button>
+            </div>
         </div>
     </div>
 </template>

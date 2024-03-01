@@ -64,5 +64,9 @@
     "Please enter all fields" : "Please enter all fields.",
 
     "Create an account" : "Create an account",
-    "Type of account" : "Type of account"
+    "Type of account" : "Type of account",
+    "required fields" : "required fields",
+    "phone number" : "Phone number",
+    "Bank card" : "Bank card",
+    "address" : "Address"
 }

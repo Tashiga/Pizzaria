@@ -7,7 +7,7 @@
     import PizzaService from '@/api/pizzaService';
     import IngredientService from '@/api/ingredientService';
     import { useI18n } from 'vue-i18n';
-import { Role } from '@/model/user';
+    import { Role } from '@/model/user';
 
 
     let isConnected: Ref<boolean> = ref(false);

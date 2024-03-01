@@ -65,5 +65,9 @@
     "Please enter the price" : "Veuillez renseigner tous les champs.",
 
     "Create an account" : "Créer un compte",
-    "Type of account" : "Type de compte"
+    "Type of account" : "Type de compte",
+    "required fields" : "champs obligatoires",
+    "phone number" : "Numéro de téléphone",
+    "Bank card" : "Carte bancaire",
+    "address" : "Adresse"
 }
