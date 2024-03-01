@@ -11,8 +11,8 @@ export class AdminJSONService implements AdminService {
 
     add(admin: Admin, callback: (error: Error | null, result?: any) => void): void{
         if(admin !== null && admin !== undefined) {
-            const query = 'INSERT INTO Admin (id, adresseMail) VALUES(?, ?)';
-            const values = [admin.id, admin.adresseMail];
+            const query = 'INSERT INTO Admin (id, numTel) VALUES(?, ?)';
+            const values = [admin.id, admin.numTel];
             console.log('admin : ', values);
             this.dbconnection.query(query, values, (error : Error | null, result: any) => {
                 if(error) {
@@ -34,9 +34,11 @@ export class AdminJSONService implements AdminService {
                     row.nom, 
                     row.prenom, 
                     row.age, 
+                    row.role,
+                    row.mail,
                     row.identifiant, 
                     row.motDePasseHash, 
-                    row.adresseMail
+                    row.numTel
                 );
             });
             callback(null, dbAdmins);
@@ -74,7 +76,7 @@ export class AdminJSONService implements AdminService {
         const query = 'UPDATE Admin SET ? WHERE id = ?';
         const toUpdate : {} = {
             'id' : id, 
-            'adresseMail' : updatedData.adresseMail};
+            'numTel' : updatedData.numTel};
         this.dbconnection.query(query, [toUpdate, id], (error: Error | null, result: any) => {
           if (error) {
             callback(error);

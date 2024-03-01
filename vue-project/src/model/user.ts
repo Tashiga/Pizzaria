@@ -5,15 +5,19 @@ export class User {
     nom: string;
     prenom: string;
     age: number;
+    role: Role;
+    mail?: string; //optionnel - quand un compte
     identifiant?: string; // Identifiant (optionnel)
     motDePasseHash?: string;
 
-    constructor(id: number,nom: string, prenom: string, age: number, identifiant?: string, motDePasse?: string) {
+    constructor(id: number,nom: string, prenom: string, age: number, role: Role, mail?: string, identifiant?: string, motDePasse?: string) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.age = age;
-        if (identifiant && motDePasse) {
+        this.role = role;
+        if (mail && identifiant && motDePasse) {
+            this.mail = mail;
             this.identifiant = identifiant;
             this.motDePasseHash = motDePasse;
             // this.motDePasseHash = this.chiffrerMotDePasse(motDePasse);
@@ -30,4 +34,10 @@ export class User {
     //         return bcrypt.compareSync(motDePasse, this.motDePasseHash);
     //     return false;
     // }
+}
+
+export enum Role {
+    Staff = "Staff",
+    Admin = "Admin",
+    Client = "Client",
 }

@@ -1,20 +1,19 @@
-import { User } from './user';
+import { Role, User } from './user';
 
 class Client extends User {
-    adresseMail: string;
-    numeroTelephone: string;
     adresse: string;
-    carteBancaire?: string; // Carte bancaire (optionnelle)
-    commandes: string[]; // Liste de commandes (par exemple, liste de pizzas)
+    numTel?: number;
+    bankCard?: number; // Carte bancaire (optionnelle)
+    commandes: string[] = []; // Liste de commandes (par exemple, liste de pizzas)
   
-    constructor(id: number, nom: string, prenom: string, age: number, identifiant: string, motDePasse: string, adresseMail: string, numeroTelephone: string, adresse: string, commandes: string[], carteBancaire?: string) {
-      super(id, nom, prenom, age, identifiant, motDePasse);
-      this.adresseMail = adresseMail;
-      this.numeroTelephone = numeroTelephone;
+    constructor(id: number, nom: string, prenom: string, age: number, role: Role, mail : string, identifiant: string, motDePasse: string, adresse: string, numTel?: number, bankCard?: number) {
+      super(id, nom, prenom, age, role, mail, identifiant, motDePasse);
       this.adresse = adresse;
-      this.commandes = commandes;
-      if (carteBancaire) {
-        this.carteBancaire = carteBancaire;
+      if(numTel)
+        this.numTel = numTel;
+      if (bankCard) {
+        this.bankCard = bankCard;
+      this.commandes = [];
       }
     }
 }

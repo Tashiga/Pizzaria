@@ -5,6 +5,8 @@ export class User {
   nom: string;
   prenom: string;
   age: number;
+  role: Role;
+  mail?: string;
   identifiant?: string;
   motDePasseHash?: string;
 
@@ -13,6 +15,8 @@ export class User {
       nom: string,
       prenom: string,
       age: number,
+      role: Role,
+      mail?: string,
       identifiant?: string,
       motDePasseHash?: string,
       motDePassDejaHash?: string
@@ -21,7 +25,9 @@ export class User {
       this.nom = nom;
       this.prenom = prenom;
       this.age = age;
-      if (identifiant) {
+      this.role = role;
+      if (mail && identifiant) {
+        this.mail = mail;
         this.identifiant = identifiant;
         if(motDePasseHash) {
           this.motDePasseHash = this.chiffrerMotDePasse(motDePasseHash);
@@ -52,4 +58,10 @@ export class User {
       }
     }
 
+  }
+
+  export enum Role {
+    Staff = "Staff",
+    Admin = "Admin",
+    Client = "Client",
   }

@@ -65,7 +65,7 @@
         
         <span>{{ $t('Username')}} : </span>
         <input type="text" v-model="USER.identifiant" required/><br/>
-        <span>{{ $t('Password')}}: </span>
+        <span>{{ $t('Password')}} : </span>
         <input type="password" v-model="USER.motDePasseHash" required/><br/><br/>
         <button type="submit">{{ $t('Create an account')}}</button>
     </form>

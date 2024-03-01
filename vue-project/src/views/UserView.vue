@@ -3,7 +3,7 @@
     import UserService from '@/api/userService';
     import staffService from '@/api/staffService';
     import {Staff} from '@/model/staff';
-    import {User} from '@/model/user';
+    import {Role, User} from '@/model/user';
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
     import { computed } from 'vue';
@@ -39,10 +39,10 @@
             fetchUsers();
             console.log('récupération vaut : ', staffs);
             const loger = computed(() => store.getters.isLoggedIn);
-            const isAdmin = computed(() => store.getters.isAdmin);
+            const role = computed(() => store.getters.getRole);
             if (loger && loger.value) {
                 isConnected.value = true;
-                if (isAdmin && isAdmin.value)
+                if (role && role.value && role.value == Role.Admin)
                     isAnAdmin.value = true;
             }
         });
@@ -63,7 +63,7 @@
         }
         async function addUser(staff: Staff) {
             try {
-                const user = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.identifiant, staff.motDePasseHash);
+                const user = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.role, staff.mail, staff.identifiant, staff.motDePasseHash);
                 const response1 = await UserService.addUser(user);
                 console.log("user created : ", user);
                 console.log('response : ', response1);
@@ -100,7 +100,7 @@
                 else if (staff.workHours && staff.workHours < 0)
                     throw new Error('WorkHours ' + t('cannot be negative'));
                 const response = await staffService.updateStaff(staff.id, staff);
-                const user: User = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.identifiant, staff.motDePasseHash);
+                const user: User = new User(staff.id, staff.nom, staff.prenom, staff.age, staff.role, staff.mail, staff.identifiant, staff.motDePasseHash);
                 const response2 = await UserService.updateUser(user.id, user);
                 showModal.value = false;
                 toastr.success('User ' + t('updated'));
@@ -123,7 +123,7 @@
                 salaryPerMonth = 0;
             if (workHours === null)
                 workHours = 0;
-            const user: Staff = new Staff(0, nom, prenom, age, salaryPerMonth, workHours);
+            const user: Staff = new Staff(0, nom, prenom, age, Role.Staff, salaryPerMonth, workHours);
             addUser(user);
         }
         function getUsers(): Staff[] {
@@ -132,10 +132,10 @@
         }
         // modal
         let showModal: Ref<Boolean> = ref(false);
-        let userToUpdate: Ref<Staff> = ref(new Staff(0, '', '', 0, 0, 0));
+        let userToUpdate: Ref<Staff> = ref(new Staff(0, '', '', 0, Role.Staff, 0, 0));
         function toggleButtonModal(user: Staff) {
             showModal.value = !showModal.value;
-            userToUpdate.value = new Staff(user.id, user.nom, user.prenom, user.age, user.salaryPerMonth, user.workHours);
+            userToUpdate.value = new Staff(user.id, user.nom, user.prenom, user.age, Role.Staff, user.salaryPerMonth, user.workHours);
         }
         ;
         function closeModal() {
@@ -156,7 +156,8 @@
             nameToAdd, prenomToAdd, ageToAdd, salaryToAdd, workHoursAdd,
             deleteUser, createNewMember, getUsers, updateUser, toggleButton,
             closeModal, showModal, toggleButtonModal, userToUpdate,
-            filterText, filteredUsers, updateFilter, isConnected, isAnAdmin
+            filterText, filteredUsers, updateFilter, isConnected, isAnAdmin,
+            Role
         };
     },
     components: { CreateUser }
@@ -239,9 +240,17 @@
                         </thead>
                         <tbody>
                             <tr v-for="u in filteredUsers()" :key="u.id">
-                                <td v-for="(col, i) in u" :key="i">
-                                    {{ col }}
-                                </td>
+                                <td>{{ u.id }}</td>
+                                <td>{{ u.nom }}</td>
+                                <td>{{ u.prenom }}</td>
+                                <td>{{ u.age }}</td>
+                                <td>{{ u.salaryPerMonth }}</td>
+                                <td>{{ u.workHours }}</td>
+                                <!-- <td v-for="(col, i) in u" :key="i" >
+                                    <template v-if="col !== 'Staff'">
+                                        {{ col }}
+                                    </template>
+                                </td> -->
                                 <img v-if="isConnected && isAnAdmin" alt="Update user" class="delete" src="@/assets/modify.svg" width="20" @click="toggleButtonModal(u)"/> 
                                 <img v-if="isConnected && isAnAdmin" alt="Delete user" class="delete" src="@/assets/delete.svg" width="20" @click="deleteUser(u.id)"/> 
                             </tr>

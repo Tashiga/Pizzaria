@@ -2,7 +2,7 @@
     import { ref, type Ref , onMounted, getCurrentInstance} from 'vue';
     import { useI18n } from 'vue-i18n'; 
     import {Staff} from '@/model/staff';
-    import {User} from '@/model/user';
+    import {Role, User} from '@/model/user';
     import UserService from '@/api/userService';
     import staffService from '@/api/staffService';
     import toastr from 'toastr';
@@ -23,7 +23,7 @@
         if((age === null || age == 0) || (salaryPerMonth === null || salaryPerMonth == 0) || (workHours  === null || workHours == 0))
             toastr.warning(t('Please enter all fields'));
         else {
-            const user: Staff = new Staff(0, nom, prenom, age, salaryPerMonth, workHours);
+            const user: Staff = new Staff(0, nom, prenom, age, Role.Staff, salaryPerMonth, workHours);
             addUser(user);
             nameToAdd.value = "";
             prenomToAdd.value = "";
@@ -37,7 +37,7 @@
 
     async function addUser(staff: Staff) {
         try {
-            const user = new User(staff.id, staff.nom, staff.prenom, staff.age,staff.identifiant, staff.motDePasseHash);
+            const user = new User(staff.id, staff.nom, staff.prenom, staff.age, Role.Staff, staff.identifiant, staff.motDePasseHash);
             const response1 = await UserService.addUser(user);
             console.log("user created : ", user);
             console.log('response : ', response1);

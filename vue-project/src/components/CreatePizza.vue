@@ -7,6 +7,7 @@
     import PizzaService from '@/api/pizzaService';
     import IngredientService from '@/api/ingredientService';
     import { useI18n } from 'vue-i18n';
+import { Role } from '@/model/user';
 
 
     let isConnected: Ref<boolean> = ref(false);
@@ -20,11 +21,13 @@
 
     onMounted(async () => {
         const loger = computed(() => store.getters.isLoggedIn);
-        const isAdmin = computed(() => store.getters.isAdmin);
+        const role = computed(() => store.getters.getRole);
         if(loger && loger.value){
             isConnected.value = true;
-            if(isAdmin && isAdmin.value)
-                isAnAdmin.value = true;
+            if(role && role.value){
+                if(role.value == Role.Admin) 
+                    isAnAdmin.value = true;
+            }
         }
         console.log("test -> ", isAnAdmin.value);
         instance = getCurrentInstance();

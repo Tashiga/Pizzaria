@@ -40,11 +40,15 @@
                                 nom: user.nom,
                                 prenom: user.prenom,
                                 age: user.age,
+                                role: user.role,
+                                mail: user.mail,
                                 identifiant: user.identifiant,
                                 motDePasseHash: user.motDePasseHash,
-                                adresseMail: user.adresseMail,
                                 salaryPerMonth : user.salaryPerMonth,
-                                workHours : user.workHours
+                                workHours : user.workHours,
+                                numTel : user.numTel,
+                                adresse : user.adresse,
+                                bankCard : user.bankCard
                             }
                             console.log('Contenu du store :', store);
                             try {

@@ -33,6 +33,7 @@ export class StaffJSONService implements StaffService {
                     row.nom,
                     row.prenom,
                     row.age,
+                    row.role,
                     row.salaryPerMonth,
                     row.workHours
                 );

@@ -1,11 +1,11 @@
-import { User } from './user';
+import { Role, User } from './user';
 
 export class Admin extends User {
-    adresseMail: string;
+    numTel: number;
 
-    constructor(id: number, nom: string, prenom: string, age: number, identifiant: string, motDePasse: string, adresseMail: string) {
-        super(id, nom, prenom, age, identifiant, motDePasse);
-        this.prenom = prenom;
-        this.adresseMail = adresseMail;
+    constructor(id: number, nom: string, prenom: string, age: number, role: Role, mail: string, identifiant: string, motDePasse: string, numTel: number) {
+        super(id, nom, prenom, age, role, mail, identifiant, motDePasse);
+        // this.prenom = prenom;
+        this.numTel = numTel;
     }
 }

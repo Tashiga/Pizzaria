@@ -9,6 +9,7 @@
     import { useStore } from 'vuex';  
     import { useI18n } from 'vue-i18n';
     import CreatePizza from '../components/CreatePizza.vue'
+import { Role } from '@/model/user';
 
     const pizzas: Ref<Pizza[]|undefined> = ref();
     const ingredients: Ref<Ingredient[]|undefined> = ref();
@@ -29,10 +30,10 @@
         await fetchPizzas();
         await fetchIngredients();
         const loger = computed(() => store.getters.isLoggedIn);
-        const isAdmin = computed(() => store.getters.isAdmin);
+        const role = computed(() => store.getters.getRole);
         if(loger && loger.value){
             isConnected.value = true;
-            if(isAdmin && isAdmin.value)
+            if(role && role.value && role.value == Role.Admin)
                 isAnAdmin.value = true;
         }
         console.log("test -> ", isAnAdmin.value);

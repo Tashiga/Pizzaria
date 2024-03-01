@@ -30,14 +30,9 @@ CREATE TABLE IF NOT EXISTS User (
     prenom VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     identifiant VARCHAR(255),
-    motDePasseHash VARCHAR(255)
-);
-
--- Table Admin
-CREATE TABLE IF NOT EXISTS Admin (
-    id INT PRIMARY KEY,
-    adresseMail VARCHAR(255) NOT NULL,
-    FOREIGN KEY (id) REFERENCES User(id)
+    motDePasseHash VARCHAR(255),
+    mail VARCHAR(255),
+    role ENUM('Staff', 'Admin', 'Client') NOT NULL DEFAULT 'Staff'
 );
 
 -- Table Staff
@@ -48,6 +43,21 @@ CREATE TABLE IF NOT EXISTS Staff (
     FOREIGN KEY (id) REFERENCES User(id)
 );
 
+-- Table Admin
+CREATE TABLE IF NOT EXISTS Admin (
+    id INT PRIMARY KEY,
+    numTel INT NOT NULL,
+    FOREIGN KEY (id) REFERENCES User(id)
+);
+
+-- Table Client
+CREATE TABLE IF NOT EXISTS Client (
+    id INT PRIMARY KEY,
+    adresse VARCHAR(255) NOT NULL, -- Adresse du client
+    numTel VARCHAR(15) NULL, -- Numéro de téléphone (peut être NULL)
+    bankCard VARCHAR(255) NULL, -- Carte bancaire (peut être NULL)
+    FOREIGN KEY (id) REFERENCES User(id) -- Clé étrangère vers User
+);
 
 -- Table Pizza
 CREATE TABLE IF NOT EXISTS Pizza (
@@ -71,56 +81,146 @@ CREATE TABLE IF NOT EXISTS Pizza_Ingredient (
     FOREIGN KEY (ingredientId) REFERENCES Ingredient(id)
 );
 
--- Insertions des valeurs dans les tables
+/*
+-------------------------------------------
+Insertion des utilisateurs
+-------------------------------------------
+*/
 
--- Insertion dans la table Pizza
-INSERT INTO Pizza (id, name, price) VALUES (1, 'Pizza Margherita', 12.99);
-INSERT INTO Pizza (id, name, price) VALUES (2, 'Pizza Pepperoni', 14.99);
-INSERT INTO Pizza (id, name, price) VALUES (3, 'Pizza Vegetarian', 13.99);
+
+-- Ajout des User Admin 
+
+-- Ajout d'un User Admin avec un compte
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
+VALUES ('Admin', 'Admin', 40, 'admin', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'admin@example.com', 'Admin'); --test
+SET @adminId := LAST_INSERT_ID();
+INSERT INTO Admin (id, numTel)
+VALUES (@adminId, 1234567890);
+
+-- Ajouts des User Staff
+
+-- insertion d'un User Staff
+INSERT INTO User (nom, prenom, age, role) VALUES ('John', 'Doe', 30, 'Staff');
+SET @lastUserId := LAST_INSERT_ID();
+INSERT INTO Staff (id, salaryPerMonth, workHours) VALUES (@lastUserId, 2500.00, 40);
+
+
+-- Ajout d'un User Staff sans compte
+INSERT INTO User (nom, prenom, age, role)
+VALUES ('User1', 'User1', 25, 'Staff');
+INSERT INTO Staff (id, salaryPerMonth, workHours)
+SELECT id, 2500.00, 40 FROM User WHERE id = LAST_INSERT_ID() AND role = 'Staff';
+
+
+-- Ajout d'un User Staff sans compte
+INSERT INTO User (nom, prenom, age, role)
+VALUES ('User2', 'User2', 30, 'Staff');
+INSERT INTO Staff (id, salaryPerMonth, workHours)
+SELECT id, 2500.00, 40 FROM User WHERE id = LAST_INSERT_ID() AND role = 'Staff';
+
+
+-- Ajout d'un User Staff avec compte
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
+VALUES ('User3', 'User3', 20, 'user3', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'user3@example.com', 'Staff'); --test
+INSERT INTO Staff (id, salaryPerMonth, workHours)
+SELECT id, 2500.00, 40 FROM User WHERE id = LAST_INSERT_ID() AND role = 'Staff';
+
+
+-- Ajout d'un User Staff avec compte
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
+VALUES ('User4', 'User4', 35, 'user4', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'user4@example.com', 'Staff');
+INSERT INTO Staff (id, salaryPerMonth, workHours)
+SELECT id, 2500.00, 40 FROM User WHERE id = LAST_INSERT_ID() AND role = 'Staff';
+
+
+-- Ajout des User Client 
+
+-- Ajout d'un User Client complet (adresse, numTel et bankCard)
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
+VALUES ('Client1', 'Client1', 30, 'client1', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'client1@example.com', 'Client');
+SET @clientId := LAST_INSERT_ID();
+INSERT INTO Client (id, adresse, numTel, bankCard)
+VALUES (@clientId, '123 rue de la banque', '1234567890', '1234567890123456');
+
+-- Ajout d'un User Client complet (adresse, numTel et bankCard)
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
+VALUES ('Client2', 'Client2', 35, 'client2', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'client2@example.com', 'Client');
+SET @client2Id := LAST_INSERT_ID();
+INSERT INTO Client (id, adresse, numTel, bankCard)
+VALUES (@client2Id, '456 avenue du crédit', '0987654321', '6543210987654321');
+
+-- Ajout d'un User Client avec seulement l'adresse
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
+VALUES ('Client3', 'Client3', 40, 'client3', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'client3@example.com', 'Client');
+SET @client3Id := LAST_INSERT_ID();
+INSERT INTO Client (id, adresse)
+VALUES (@client3Id, '789 boulevard du prêt');
+
+
+/*
+-------------------------------------------
+Insertion des autres données
+-------------------------------------------
+*/
+
 
 -- Insertion dans la table Ingredient
-INSERT INTO Ingredient (id, name) VALUES (1, 'Tomato');
-INSERT INTO Ingredient (id, name) VALUES (2, 'Pepperoni slices');
-INSERT INTO Ingredient (id, name) VALUES (3, 'Mozzarella cheese');
-INSERT INTO Ingredient (id, name) VALUES (4, 'Tomato sauce');
-INSERT INTO Ingredient (id, name) VALUES (5, 'Bell peppers');
-INSERT INTO Ingredient (id, name) VALUES (6, 'Onions');
-INSERT INTO Ingredient (id, name) VALUES (7, 'Black olives');
-INSERT INTO Ingredient (id, name) VALUES (8, 'Mushrooms');
+INSERT INTO `ingredient` (`id`, `name`) VALUES
+(9, 'Ananas'),
+(16, 'artichauts'),
+(19, 'Barbecue sauce'),
+(13, 'Basilic'),
+(5, 'Bell peppers'),
+(7, 'Black olives'),
+(14, 'Chorizo'),
+(18, 'Ciboulette'),
+(12, 'Jambon'),
+(23, 'Lardons'),
+(11, 'Merguez'),
+(15, 'Miel'),
+(3, 'Mozzarella cheese'),
+(8, 'Mushrooms'),
+(6, 'Onions'),
+(2, 'Pepperoni slices'),
+(25, 'Piments'),
+(22, 'Pomme de terre'),
+(24, 'Poulet kebab'),
+(20, 'Poulet rôti'),
+(26, 'Samuraï sauce'),
+(21, 'Saucisse'),
+(17, 'Saumon fumé'),
+(27, 'thon'),
+(1, 'Tomato'),
+(4, 'Tomato sauce'),
+(10, 'Viande Hachée');
 
+-- Insertion dans la table Pizza
+INSERT INTO `pizza` (`id`, `name`, `price`) VALUES
+(1, 'Margherita', 12.99),
+(2, 'Pepperoni', 14.99),
+(3, 'Vegetarian', 13.99),
+(4, 'Cheese Pizza', 10.99),
+(11, 'Pizza Royale', 10.59),
+(12, 'Pizza Hawaïenne', 10.59),
+(13, 'Pizza 4 saisons', 10.59),
+(14, 'Pizza Salami', 10.59),
+(15, 'Pizza chèvre miel', 10.59),
+(16, 'Pizza au thon', 10.59),
+(17, 'Pizza Chorizo', 10.59),
+(18, 'Pizza Saumon Fumé', 10.59);
 
--- Associer des ingrédients aux pizzas dans la table Pizza_Ingredient
-
--- Margherita (Pizza 1)
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (1, 1); -- Tomato
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (1, 3); -- Mozzarella cheese
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (1, 4); -- Tomato sauce
-
--- Pepperoni (Pizza 2)
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (2, 1); -- Tomato
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (2, 2); -- Pepperoni slices
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (2, 3); -- Mozzarella cheese
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (2, 4); -- Tomato sauce
-
--- Vegetarian (Pizza 3)
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (3, 5); -- Bell peppers
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (3, 6); -- Onions
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (3, 7); -- Black olives
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (3, 8); -- Mushrooms
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (3, 4); -- Tomato sauce
-INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (3, 3); -- Mozzarella cheese
-
--- Insertion d'utilisateurs
-
--- Insertion des User
-INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('Doe', 'John', 35, 'johndoe', 'hashedpassword1');
-INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('Smith', 'Emma', 28, 'emmasmith', 'hashedpassword2');
-INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('Johnson', 'Alice', 30, 'alicejohnson', 'hashedpassword3');
-
--- Insertion des Staff
-INSERT INTO Staff (id, salaryPerMonth, workHours) VALUES (LAST_INSERT_ID(), 4000, 40);
-INSERT INTO Staff (id, salaryPerMonth, workHours) VALUES (LAST_INSERT_ID(), 3500, 35);
-
--- Insertion d'un admin par defaut
-INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('NomAdmin', 'PrenomAdmin', 18, 'adminTest', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq'); --test
-INSERT INTO Admin (id, adresseMail) VALUES (LAST_INSERT_ID(), 'admin.test@example.com');
+-- insert into pizza_ingredient
+INSERT INTO `pizza_ingredient` (`pizzaId`, `ingredientId`) VALUES
+(1, 1),
+(1, 3),
+(1, 4),
+(2, 1),
+(2, 2),
+(2, 3),
+(2, 4),
+(3, 3),
+(3, 4),
+(3, 5),
+(3, 6),
+(3, 7),
+(3, 8);

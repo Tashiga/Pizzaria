@@ -1,8 +1,10 @@
 import { Role, User } from "../user/user";
 
-export class Admin extends User{
+export class Client extends User{
 
-    numTel: number;
+    adresse: string;
+    numTel?: number;
+    bankCard?:number;
 
     constructor(
       id: number,
@@ -13,9 +15,15 @@ export class Admin extends User{
       mail: string,
       identifiant: string, 
       motDePass: string,
-      numTel: number
+      adresse: string,
+      numTel?: number,
+      bankCard?:number
     ) {
       super(id, nom, prenom, age, role, mail, identifiant, motDePass);
-      this.numTel = numTel;
+      this.adresse = adresse;
+      if(numTel)
+        this.numTel = numTel;
+      if(bankCard)
+        this.bankCard = bankCard;
     }
   }

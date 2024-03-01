@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import { ProfilUser } from '@/model/profilUser';
 import {type Ref} from 'vue';
+import { Role } from '@/model/user';
 
 
 export default createStore({
@@ -42,8 +43,8 @@ export default createStore({
     isLoggedIn(state: any) {
       return state.user !== null;
     },
-    isAdmin(state: any) {
-      return state.user.adresseMail !== undefined;
+    getRole(state: any) {
+      return state.user.role;
     },
     getLanguage(state:any) : Ref<"FR" | "EN">{
       console.log("language : ",state.language);

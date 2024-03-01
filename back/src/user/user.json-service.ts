@@ -1,4 +1,4 @@
-import {User} from './user';
+import {Role, User} from './user';
 import {UserService} from './user.service';
 import DbConnection from '../database/dbConfig';
 import bcrypt from 'bcrypt';
@@ -10,9 +10,9 @@ export class UserJSONService implements UserService{
 
     add(user: User, callback:(error: Error | null, result?: any)=>void): void{
         if(user !== null && user !== undefined) {
-            let newUser: User= new User(0, user.nom, user.prenom, user.age, user.identifiant, user.motDePasseHash);
-            const query = 'INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES (?, ?, ?, ?, ?)';
-            const values = [newUser.nom, newUser.prenom, newUser.age, newUser.identifiant, newUser.motDePasseHash];
+            let newUser: User= new User(0, user.nom, user.prenom, user.age, user.role, user.mail, user.identifiant, user.motDePasseHash);
+            const query = 'INSERT INTO User (nom, prenom, age, role, mail, identifiant, motDePasseHash) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            const values = [newUser.nom, newUser.prenom, newUser.age, newUser.role, newUser.mail, newUser.identifiant, newUser.motDePasseHash];
             console.log('user : ', values);
             console.log('check mdp : ', newUser);
             if(user.motDePasseHash){
@@ -40,6 +40,8 @@ export class UserJSONService implements UserService{
                   row.nom,
                   row.prenom,
                   row.age,
+                  row.role,
+                  row.mail,
                   row.identifiant,
                   undefined,
                   row.motDePasseHash
@@ -76,11 +78,7 @@ export class UserJSONService implements UserService{
     }
 
     checkMDP(mdp: {identifiant: string, motDePasseHash: string}, callback: (error: Error | null, result?: any) => void):void {
-        // const query = 'SELECT * FROM user natural join admin where identifiant = ?';
-        // select (select * from user natural join staff), * from user natural join admin ;
-        const query = 'select user.id as id, user.nom, user.prenom, user.age, user.identifiant, user.motDePasseHash, admin.adresseMail, staff.salaryPerMonth, staff.workHours from user left join admin on user.id = admin.id left join staff on user.id = staff.id where user.identifiant=?';
-        const query1 = 'SELECT * FROM admin natural join user where id = ?';
-        const query2 = 'SELECT * FROM staff natural join user where id = ?';
+        const query = 'SELECT * from user left join staff on user.id = staff.id left join admin on user.id = admin.id left join client on user.id = client.id where user.identifiant = ?';
         this.dbconnection.query(query, [mdp.identifiant], async (error: Error | null, result: any) => {
             if (error) {
               callback(error);
@@ -96,51 +94,43 @@ export class UserJSONService implements UserService{
                 callback(null, {});
                 return;
             }
-            let isAdmin: boolean = false;
-            let isStaff: boolean = false;
             let user: User = new User(
                 result[0].id,
                 result[0].nom,
                 result[0].prenom,
                 result[0].age,
+                result[0].role,
+                result[0].mail,
                 result[0].identifiant,
                 undefined,
                 result[0].motDePasseHash
             );
-            console.log('user : ', result[0]);
+            // console.log('user : ', result[0]);
+            // verifier le mdp du id
             if(user.verifierMotDePasse(mdp.motDePasseHash)) {
                 let profilUser: ProfilUser = new ProfilUser(
                     user.id,
                     user.nom,
                     user.prenom,
-                    user.age
+                    user.age,
+                    user.role
                 );
-                console.log("test : ", profilUser);
-                if(user.identifiant && user.motDePasseHash)
-                    profilUser.isAccount(user.identifiant, user.motDePasseHash);
+                // console.log("test : ", profilUser);
+                if(user.mail && user.identifiant && user.motDePasseHash)
+                    profilUser.isAccount(user.mail, user.identifiant, user.motDePasseHash);
 
-                await this.isResult2(query1, result[0].id).then(response => {
-                    if(response != null && response != undefined) {
-                        isAdmin = response;
-                    }
-                });
 
-                await this.isResult2(query2, result[0].id).then(response => {
-                    if(response != null && response != undefined) {
-                        isStaff = response;
-                    }
-                });
-
-                if(isAdmin){
-                    profilUser.isAdmin(result[0].adresseMail);
+                if(user.role == Role.Admin){
+                    profilUser.isAdmin(result[0].numTel);
                     console.log("finally user is an admin !");
                 }
-                else if(isStaff){
+                else if(user.role == Role.Staff){
                     profilUser.isStaff(result[0].salaryPerMonth, result[0].workHours);
                     console.log("finally user is a staff !");
                 }
-                else {
-                    console.log("finally type of user cannot find !");
+                else if(user.role == Role.Client){
+                    profilUser.isClient(result[0].adresse, result[0].numTel, result[0].bankCard);
+                    console.log("finally user is a client !")
                 }
                 console.log("profilUser : ", profilUser);
                 callback(null, profilUser);

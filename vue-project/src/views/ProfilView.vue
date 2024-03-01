@@ -3,7 +3,7 @@
     import UserService from '@/api/userService';
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
-    import { User } from '@/model/user';
+    import { Role, User } from '@/model/user';
     import { useRouter} from 'vue-router';
     import { computed } from 'vue';
     import { useStore } from 'vuex';  
@@ -21,13 +21,12 @@
 
     onMounted(async () => {
       const user = computed(() => store.getters.getUser);
-      const isAdmin = computed (() => store.getters.isAdmin);
       // store.getters.getUser;
       
       if(user && user.value){
         userLogin.value = user.value;
-        if(isAdmin && isAdmin.value)
-        isAnAdmin.value = true;
+        if(userLogin.value?.role== Role.Admin)
+          isAnAdmin.value = true;
         console.log('Bienvenue dans votre profil !');
       }
       else {
@@ -35,7 +34,7 @@
         router.push('/connexion');
       }
 
-      if(isAdmin.value){
+      if(isAnAdmin.value){
         menu.value = [t('Profil'), t('Dashboard')];
       }
       else {
@@ -75,7 +74,7 @@
       <span>{{ $t('Your') }} {{ $t('Age') }} : {{ userLogin.age }}</span> <br />
 
       <div v-if="isAnAdmin"> 
-        <span>{{ $t('Your') }} {{ $t('mail address') }} : {{ userLogin.adresseMail }}</span>
+        <span>{{ $t('Your') }} {{ $t('mail address') }} : {{ userLogin.mail }}</span>
       </div>
 
       <div v-else>
