@@ -1,6 +1,6 @@
 # Pizzaria
 
-Il comporte deux applications : un pour le backend et un autre pour le front.
+Il comporte deux applications : une pour le backend et une autre pour le frontend.
 
 # Lancer le projet
 
