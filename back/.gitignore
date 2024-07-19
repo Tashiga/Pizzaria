@@ -1,3 +1,13 @@
+/dist
+/node_modules
+/build
+/back/dist
+/back/node_modules
+/back/build
+/vue-project/dist
+/vue-project/node_modules
+/vue-project/build
+
 # Logs
 logs
 *.log
