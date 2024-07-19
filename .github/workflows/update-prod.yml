@@ -25,7 +25,11 @@ jobs:
         run: git checkout prod
 
       - name: Merge main into prod
-        run: git merge origin/main --allow-unrelated-histories
+        # run: git merge origin/main --allow-unrelated-histories
+        run: |
+          git merge origin/main --strategy-option theirs || true
+          git add .
+          git commit -m "Merge main into prod with auto-resolved conflicts" || true
 
       - name: Push to prod
         run: git push origin prod
