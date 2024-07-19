@@ -16,8 +16,23 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout prod branch
+        run: git checkout prod
+
       - name: Merge main into prod
-        run: |
-          git checkout prod
-          git merge main
-          git push origin prod
+        run: git merge origin/main
+
+      - name: Push to prod
+        run: git push origin prod
+
+      # - name: Deploy to Production
+      #   run: echo "Deploying to production..."
+
+      # - name: Merge main into prod
+      #   run: |
+      #     git checkout prod
+      #     git merge main
+      #     git push origin prod
