@@ -1,6 +1,6 @@
 import { Role, User } from './user';
 
-class Client extends User {
+export class Client extends User {
     adresse: string;
     numTel?: number;
     bankCard?: number; // Carte bancaire (optionnelle)

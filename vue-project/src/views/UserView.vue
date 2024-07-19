@@ -166,21 +166,21 @@
 </script>
 
 <template>
-    <main>
-        <div>
-            <div v-if="isConnected && isAnAdmin">
+    <!-- <main> -->
+        <!-- <div> -->
+            <div v-if="isConnected && isAnAdmin" class="content">
                 <div v-if="titleIsCreation">
-                    <!-- <h2 class="title">{{ $t('Create new-m')}} User</h2> -->
+                    <h1 class="title">{{ $t('Create new-m')}} User</h1>
                     <img  alt="Return Back" class="icon delete moveToRight" src="@/assets/return-back.svg" width="20" @click="toggleButton()" :title="$t('Display all-m') +' users'"/>
                 </div>
                 <div v-else>
-                    <h2 class="title">{{ $t('Display all-m')}} Users</h2>
+                    <h1 class="title">{{ $t('Display all-m')}} Users</h1>
                     <img alt="Create user" class="icon delete moveToRight" src="@/assets/add.svg" width="20" @click="toggleButton()" :title="$t('Create new-m')+' user'"/> 
                 </div>
             </div>
 
             
-            <div>
+            <div class="content">
                 <!-- create new Staff -->
                 <div v-if="titleIsCreation">
                     <!-- <div class="labels">
@@ -207,11 +207,11 @@
                         <button @click="createNewMember(nameToAdd, prenomToAdd, ageToAdd, salaryToAdd,workHoursAdd)">{{ $t('Create') }}</button>
                     </div> -->
 
-                    <CreateUser/>
+                    <CreateUser titleToDisplay="false"/>
                     
                 </div>
 
-                <div v-else>
+                <div v-else class="content">
                     <span>{{ $t('Search by') }} Username : </span>
                     <input type="text" v-model="filterText" class="filter" @input="updateFilter" />
 
@@ -258,8 +258,8 @@
                     </table>
                 </div>
             </div>
-        </div>
-    </main>
+        <!-- </div> -->
+    <!-- </main> -->
 </template>
 
 <style>

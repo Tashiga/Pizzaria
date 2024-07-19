@@ -7,6 +7,10 @@
     import staffService from '@/api/staffService';
     import toastr from 'toastr';
 
+    defineProps<{
+        titleToDisplay: string
+    }>()
+
     const { t } = useI18n();
     //for create new user
     const nameToAdd: Ref<string> = ref('');
@@ -56,7 +60,7 @@
 
 <template>
     <div class="content">
-        <h1 class="title">{{ $t('Create new-m')}} User</h1>
+        <h1 v-if="titleToDisplay=='true'" class="title">{{ $t('Create new-m')}} User</h1>
         <!-- create new Staff -->
         <div>
             <div class="labels">

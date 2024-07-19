@@ -115,7 +115,7 @@ import { Role } from '@/model/user';
 </script>
 
 <template>
-    <main>
+    <!-- <main> -->
 
         
 
@@ -167,7 +167,7 @@ import { Role } from '@/model/user';
 
         <CreatePizza @pizzaCreated="updatePizzaList" @ingredientCreated="updateIngredientList"/>
         
-    </main>
+    <!-- </main> -->
 </template>
 
 <style>

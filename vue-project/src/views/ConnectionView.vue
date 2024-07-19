@@ -3,20 +3,26 @@
     import UserService from '@/api/userService';
     import toastr from 'toastr';
     import 'toastr/build/toastr.min.css';
-    import { User } from '@/model/user';
+    import { Role, User } from '@/model/user';
     import { useRouter} from 'vue-router';
     import { useStore } from 'vuex';
     import { computed } from 'vue';
-    import type { ProfilUser } from '@/model/profilUser';
+    import { ProfilUser } from '@/model/profilUser';
     import { useI18n } from 'vue-i18n';
 
     const login: {'identifiant': string, 'motDePasseHash': string} = {
     "identifiant" : "",
     "motDePasseHash" : ""
 };
+    const newUser : {'identifiant': string, 'motDePasseHash' : string, 'email' : string} = {
+        "identifiant" : "",
+        "motDePasseHash" : "",
+        "email" : ""
+    }
     const store = useStore();
     const router = useRouter();
     const { t } = useI18n();
+    const connection : Ref<Boolean> = ref(false);
     onMounted(async () => {
         const user = computed(() => store.getters.getUser);
         if(user && user.value){
@@ -35,21 +41,20 @@
                             console.log("data: ", data);
                             let user: any = data.result;
                             toastr.success(t('Connection established'));
-                            let test: ProfilUser = {
-                                id: user.id,
-                                nom: user.nom,
-                                prenom: user.prenom,
-                                age: user.age,
-                                role: user.role,
-                                mail: user.mail,
-                                identifiant: user.identifiant,
-                                motDePasseHash: user.motDePasseHash,
-                                salaryPerMonth : user.salaryPerMonth,
-                                workHours : user.workHours,
-                                numTel : user.numTel,
-                                adresse : user.adresse,
-                                bankCard : user.bankCard
-                            }
+                            let test: ProfilUser = new ProfilUser(
+                                user.id,
+                                user.nom,
+                                user.prenom,
+                                user.age,
+                                user.role
+                            );
+                            test.isAccount(user.mail, user.identifiant, user.motDePasseHash);
+                            if(user.role === Role.Admin)
+                                test.isAdmin(user.numTel);
+                            else if(user.role === Role.Client)
+                                test.isClient(user.adresse, user.numTel, user.bankCard);
+                            else if(user.role === Role.Staff)
+                                test.isStaff(user.salaryPerMonth, user.workHours);
                             console.log('Contenu du store :', store);
                             try {
                                 // Stocker les données de l'utilisateur dans le store Vuex
@@ -71,6 +76,16 @@
         }
         
     }
+
+    async function createUser() {
+        if(newUser !== undefined && newUser !== null && newUser.identifiant !== null && newUser.motDePasseHash !== null && newUser.email !== null) {
+            console.log("need to code inscription for ...", newUser);
+        }
+    }
+
+    function changeOtpion() {
+        connection.value = !connection.value;
+    }
     
 
 
@@ -79,17 +94,28 @@
 <template>
     <main>
 
-        <div class="connexionContent">
+        <div class="connexionContent" v-if="!connection">
             <div class="form">
                 <h2>{{ $t('Connection') }}</h2>
                 <input type="text" class="connexionInputs" name="identifiant" :placeholder="$t('Username')" v-model="login.identifiant" required>
                 <input type="password" class="connexionInputs" name="password" :placeholder="$t('Password')" v-model="login.motDePasseHash" required>
                 <button class="connexionInputs connexionButton" @click="toLogIn()">{{ $t('To log in') }}</button>
+                <span @click="changeOtpion()">{{ $t('Inscription') }}</span>
                 <!-- <input type="submit" value="Se connecter"> -->
             </div>
-                
-
             
+        </div>
+
+        <div v-else class="connexionContent">
+            <div class="form">
+                <h2>{{ $t('Inscription') }}</h2>
+                <input type="text" class="connexionInputs" name="identifiant" :placeholder="$t('Username')" v-model="newUser.identifiant" required>
+                <input type="password" class="connexionInputs" name="password" :placeholder="$t('Password')" v-model="newUser.motDePasseHash" required>
+                <input type="email" class="connexionInputs" name="email" :placeholder="$t('Email')" v-model="newUser.email" required>
+                <button class="connexionInputs connexionButton" @click="createUser()">{{ $t('Sign up') }}</button>
+                <span @click="changeOtpion()">{{ $t('Connection') }}</span>
+                <!-- <input type="submit" value="Se connecter"> -->
+            </div>
         </div>
 
         

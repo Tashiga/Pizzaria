@@ -22,7 +22,7 @@
                     <CreatePizza/>
                 </div>
                 <div class="composant blocks" style="padding: 10px;">
-                    <CreateUser/>
+                    <CreateUser titleToDisplay="true"/>
                 </div>
                 <div class="composant blocks" style="padding: 10px; width: 40%;">
                     <CreateAccount/>

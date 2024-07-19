@@ -23,4 +23,27 @@ export class ProfilUser {
         this.age = age;
         this.role = role;
     }
+
+    isAccount(mail: string, identifiant: string, motDePass: string){
+        this.mail = mail;
+        this.identifiant = identifiant;
+        this.motDePasseHash = motDePass;
+    }
+
+    isAdmin(numTel: number) {
+        this.numTel = numTel;
+    }
+
+    isStaff(salaryPerMonth : number, workHours: number) {
+        this.salaryPerMonth = salaryPerMonth;
+        this.workHours = workHours;
+    }
+
+    isClient(adresse: string, numTel?: number, bankCard?: number){
+        this.adresse = adresse;
+        if(numTel)
+          this.numTel = numTel;
+        if(bankCard)
+          this.bankCard = bankCard;
+    }
 }

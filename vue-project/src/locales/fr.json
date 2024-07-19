@@ -69,5 +69,7 @@
     "required fields" : "champs obligatoires",
     "phone number" : "Numéro de téléphone",
     "Bank card" : "Carte bancaire",
-    "address" : "Adresse"
+    "address" : "Adresse",
+    "Inscription" : "Inscription",
+    "Sign up" : "S'inscrire"
 }

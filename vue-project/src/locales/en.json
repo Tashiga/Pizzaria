@@ -68,5 +68,7 @@
     "required fields" : "required fields",
     "phone number" : "Phone number",
     "Bank card" : "Bank card",
-    "address" : "Address"
+    "address" : "Address",
+    "Inscription" : "Inscription",
+    "Sign up" : "Sign up"
 }

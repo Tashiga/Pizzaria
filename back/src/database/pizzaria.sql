@@ -35,6 +35,12 @@ CREATE TABLE IF NOT EXISTS User (
     role ENUM('Staff', 'Admin', 'Client') NOT NULL DEFAULT 'Staff'
 );
 
+ALTER TABLE User
+ADD CONSTRAINT UniqueIdentifiant UNIQUE (identifiant);
+
+ALTER TABLE User
+ADD CONSTRAINT UniqueMail UNIQUE (mail);
+
 -- Table Staff
 CREATE TABLE IF NOT EXISTS Staff (
     id INT PRIMARY KEY,
@@ -87,12 +93,14 @@ Insertion des utilisateurs
 -------------------------------------------
 */
 
-
+/*
 -- Ajout des User Admin 
+--mot de passe = test
+*/
 
 -- Ajout d'un User Admin avec un compte
 INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
-VALUES ('Admin', 'Admin', 40, 'admin', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'admin@example.com', 'Admin'); --test
+VALUES ('Admin', 'Admin', 40, 'admin', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'admin@example.com', 'Admin'); 
 SET @adminId := LAST_INSERT_ID();
 INSERT INTO Admin (id, numTel)
 VALUES (@adminId, 1234567890);
@@ -118,10 +126,13 @@ VALUES ('User2', 'User2', 30, 'Staff');
 INSERT INTO Staff (id, salaryPerMonth, workHours)
 SELECT id, 2500.00, 40 FROM User WHERE id = LAST_INSERT_ID() AND role = 'Staff';
 
+/*
+-- test
+*/
 
 -- Ajout d'un User Staff avec compte
 INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash, mail, role)
-VALUES ('User3', 'User3', 20, 'user3', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'user3@example.com', 'Staff'); --test
+VALUES ('User3', 'User3', 20, 'user3', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq', 'user3@example.com', 'Staff');
 INSERT INTO Staff (id, salaryPerMonth, workHours)
 SELECT id, 2500.00, 40 FROM User WHERE id = LAST_INSERT_ID() AND role = 'Staff';
 
