@@ -1,12 +1,11 @@
-/*
+DROP DATABASE pizzaria;
+
 -- Création de la base de données pizzaria
 CREATE DATABASE IF NOT EXISTS pizzaria;
 
+
 -- Utilisation de la base de données pizzaria
 USE pizzaria;
-
-*/
-
 
 -- Supprimer la table User si elle existe
 DROP TABLE IF EXISTS User;
@@ -114,13 +113,15 @@ INSERT INTO Pizza_Ingredient (pizzaId, ingredientId) VALUES (3, 3); -- Mozzarell
 
 -- Insertion des User
 INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('Doe', 'John', 35, 'johndoe', 'hashedpassword1');
-INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('Smith', 'Emma', 28, 'emmasmith', 'hashedpassword2');
 INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('Johnson', 'Alice', 30, 'alicejohnson', 'hashedpassword3');
 
--- Insertion des Staff
+-- Insertion d'un Staff
 INSERT INTO Staff (id, salaryPerMonth, workHours) VALUES (LAST_INSERT_ID(), 4000, 40);
+
+-- Insertion d'un User qui est Staff
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('Smith', 'Emma', 28, 'emmasmith', 'hashedpassword2');
 INSERT INTO Staff (id, salaryPerMonth, workHours) VALUES (LAST_INSERT_ID(), 3500, 35);
 
--- Insertion d'un admin par defaut
-INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('NomAdmin', 'PrenomAdmin', 18, 'adminTest', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq'); --test
+-- Insertion d'un admin par defaut -- test
+INSERT INTO User (nom, prenom, age, identifiant, motDePasseHash) VALUES ('NomAdmin', 'PrenomAdmin', 18, 'adminTest', '$2b$10$kN9LGIV0AwUNyon4M2UNL.yQ2W/Bv6XsH95pWSU9bFKjOUQ7bSazq');
 INSERT INTO Admin (id, adresseMail) VALUES (LAST_INSERT_ID(), 'admin.test@example.com');

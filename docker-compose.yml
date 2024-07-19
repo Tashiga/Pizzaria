@@ -1,11 +1,59 @@
 version: '3'
 services:
   backend:
-    build: ./back
+    build: 
+      dockerfile: dockerfile
+      context: ./back
     ports:
       - "3000:3000"
+    env_file:
+      - ./back/.env
+    volumes:
+      - ./back:/usr/src/app
+    container_name: backend
+    command: npm run dev
+    depends_on:
+      - db-init
 
-  # frontend:
-  #   build: ./vue-project
-  #   ports:
-  #     - "8080:8080"
+  db:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_USER: ${USER}
+      MYSQL_PASSWORD: ${PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./back/mysql-data:/var/lib/mysql
+    env_file:
+      - /back/.env
+
+  db-init:
+    image: mysql:5.7
+    depends_on:
+      - db
+    entrypoint: ["/init-scripts/init-db.sh"]
+    volumes:
+      - ./back/init-scripts:/init-scripts
+      - ./back/init-scripts:/docker-entrypoint-initdb.d
+    env_file:
+      - /back/.env
+
+  frontend:
+    build:
+      dockerfile: dockerfile
+      context: ./vue-project
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./vue-project:/app
+    container_name: frontend
+    command: npm run dev
+    env_file:
+      - /back/.env
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:

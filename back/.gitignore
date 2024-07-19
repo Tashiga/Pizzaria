@@ -1,9 +1,11 @@
 /dist
 /node_modules
 /build
+/mysql-data
 /back/dist
 /back/node_modules
 /back/build
+/back/mysql-data
 /vue-project/dist
 /vue-project/node_modules
 /vue-project/build

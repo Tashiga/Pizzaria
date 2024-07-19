@@ -1,7 +1,7 @@
 import {User} from './user';
 import {UserService} from './user.service';
 import DbConnection from '../database/dbConfig';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { ProfilUser } from './profilUser';
 
 export class UserJSONService implements UserService{

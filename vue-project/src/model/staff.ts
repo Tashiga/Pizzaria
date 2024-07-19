@@ -1,5 +1,5 @@
 import { User } from './user';
-// import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcryptjs';
 
 export class Staff extends User {
     salaryPerMonth: number;
