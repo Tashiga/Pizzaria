@@ -7,7 +7,8 @@ export default createStore({
 
   state: {
     user: JSON.parse(localStorage.getItem('user') || 'null'),
-    language : JSON.parse(localStorage.getItem('language') || 'FR')
+    // language : JSON.parse(localStorage.getItem('language') || 'FR')
+    language: localStorage.getItem('language') || 'FR'
   },
   mutations: {
     SET_USER(state: any, user: ProfilUser) {
