@@ -19,11 +19,21 @@ export class ExpressServer {
         this.express.use(bodyParser.json());
     }
     private configureMiddleware(): void {
+        const allowedOrigins = [
+            'http://localhost:5173',
+            process.env.VITE_API_URL                   
+          ];
         this.express.use(cors({
-            origin: 'http://localhost:5173',
-            methods: 'GET,PUT,POST,DELETE', 
-            credentials: true
-          }));
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            } else {
+            callback(new Error('Not allowed by CORS'));
+            }
+        },
+        methods: 'GET,PUT,POST,DELETE',
+        credentials: true
+        }));
       }
 
     bootstrap(): void {

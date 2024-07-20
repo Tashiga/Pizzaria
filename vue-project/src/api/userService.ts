@@ -1,9 +1,12 @@
 import {User} from '@/model/user'
 import axios, { type AxiosResponse } from 'axios';
 
+const URL : string = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API : string = URL + '/api/users/';
+
 const UserService = {
     async getUsers() {
-        return axios.get('http://localhost:3000/api/users/all-users');
+        return axios.get(API + '/all-users');
     },
 
     // async getUserById(userId: number): Promise<AxiosResponse<User>> {
@@ -16,20 +19,20 @@ const UserService = {
 
     async addUser(newUser: User): Promise<AxiosResponse<User>> {
         console.log("Hello : ", newUser);
-        return axios.post<User>('http://localhost:3000/api/users/add-user', newUser);
+        return axios.post<User>(API + '/add-user', newUser);
     },
 
     async deleteUserbyId(userId: number): Promise<AxiosResponse<void>>{
-        return axios.delete<void>(`http://localhost:3000/api/users/delete/${userId}`);
+        return axios.delete<void>(API + `/delete/${userId}`);
     },
 
     async updateUser(userId: number, updatedUser: User): Promise<AxiosResponse<User>> {
-        return axios.put<User>(`http://localhost:3000/api/users/update-user/${userId}`, updatedUser);
+        return axios.put<User>(API + `/update-user/${userId}`, updatedUser);
     },
 
     async checkMDP(login: {"identifiant": string, "motDePasseHash": string}) {
         console.log("x : ", login);
-        return axios.post<{}>('http://localhost:3000/api/users/checkMDP', login);
+        return axios.post<{}>(API + '/checkMDP', login);
     }
   };
   

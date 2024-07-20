@@ -1,7 +1,9 @@
 import type { Ingredient } from '@/model/pizza';
 import axios, { type AxiosResponse } from 'axios';
 
-const API : string = 'http://localhost:3000/api/ingredients/';
+const URL : string = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+const API : string = URL + '/api/ingredients/';
 
 const IngredientService = {
     
