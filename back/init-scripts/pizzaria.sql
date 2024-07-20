@@ -1,11 +1,14 @@
-DROP DATABASE pizzaria;
+/*DROP DATABASE pizzaria;
 
 -- Création de la base de données pizzaria
 CREATE DATABASE IF NOT EXISTS pizzaria;
 
 
 -- Utilisation de la base de données pizzaria
-USE pizzaria;
+USE ${DATABASE};
+*/
+
+SET FOREIGN_KEY_CHECKS = 0;
 
 -- Supprimer la table User si elle existe
 DROP TABLE IF EXISTS User;
@@ -15,6 +18,7 @@ DROP TABLE IF EXISTS Pizza_Ingredient;
 DROP TABLE IF EXISTS Pizza;
 DROP TABLE IF EXISTS Ingredient;
 
+SET FOREIGN_KEY_CHECKS = 1;
 
 /*
 -------------------------------------------

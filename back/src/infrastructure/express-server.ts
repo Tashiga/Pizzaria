@@ -2,6 +2,8 @@ import express from 'express';
 import { ExpressRouter } from './express-router';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export class ExpressServer {
     private express = express();
@@ -25,6 +27,7 @@ export class ExpressServer {
           ];
         this.express.use(cors({
         origin: (origin, callback) => {
+            console.log('origin-> ', origin);
             if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
             } else {
